@@ -238,18 +238,15 @@
       };
 
       window.showError = function showError(message) {
-        console.log('Error:', message);
-        alert(message);
+        toast.error(message);
       };
 
       window.showWarning = function showWarning(message) {
-        console.log('Warning:', message);
-        alert(message);
+        toast.warn(message);
       };
 
       window.showInfo = function showInfo(message) {
-        console.log('Info:', message);
-        alert(message);
+        toast.info(message);
       };
 
       window.showCustom = function showCustom() {

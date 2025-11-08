@@ -2,14 +2,41 @@
   position: fixed;
   width: var(--width);
 }
-
-[data-toaster-content][data-toaster-position-y='top'] {
+[data-toaster-content] {
+  list-style: none;
+}
+[data-toaster-content][data-position-y='top'] {
   top: var(--offset-top);
+  --y: translateY(-100%);
+}
+[data-toast-item][data-expanded='true'] {
+  --y: translateY(calc(var(--offset) * 1));
+}
+
+[data-toast-item][data-position-y='top'] {
+  top: 0;
+}
+[data-toast-item][data-toast-variant='success'] {
+  background: var(--success-color);
+}
+[data-toast-item][data-toast-variant='error'] {
+  background: var(--error-color);
+}
+[data-toast-item][data-toast-variant='warning'] {
+  background: var(--warning-color);
+}
+[data-toast-item][data-toast-variant='info'] {
+  background: var(--info-color);
 }
 
 [data-toast-item] {
-  transform: var(--y);
+  --y: translateY(100%);
   overflow-wrap: anywhere;
   z-index: var(--z-index);
   height: var(--initial-height);
+  position: absolute;
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  transform: var(--y);
 }
