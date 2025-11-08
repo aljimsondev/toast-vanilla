@@ -16,8 +16,25 @@ interface Toasts {
   id: number;
   timeoutId?: number;
 }
-interface ToastConfig extends ToastOptions {
+type ToastStyle = {
+  offset: number;
+  borderRadius: number;
+  successColor: string;
+  errorColor: string;
+  warningColor: string;
+  infoColor: string;
+  gap: number;
+  textColor: string;
+  textColorForeground: string;
+  highlightColor: string;
+  background: string;
+};
+
+interface ToastConfig {
   maxItemToRender: number;
+  position?: ToastPosition;
+  duration?: number;
+  styles?: ToastStyle;
 }
 
 interface ToastParams {
@@ -34,11 +51,28 @@ export class ToastVanilla {
   initialHeight: number = 60;
   offset: number = 16;
   position: ToastPosition = 'top-right';
+  styles: ToastStyle = {
+    borderRadius: 8,
+    errorColor: 'oklch(0.577 0.245 27.325)',
+    gap: 16,
+    infoColor: 'oklch(0.546 0.245 262.881)',
+    successColor: 'oklch(0.627 0.194 149.214)',
+    warningColor: 'oklch(0.705 0.213 47.604)',
+    textColor: 'oklch(0.21 0.006 285.885)',
+    highlightColor: 'oklch(0.145 0 0)',
+    background: 'oklch(1 0 0)',
+    textColorForeground: 'oklch(1 0 0)',
+    offset: 16,
+  };
 
   constructor(config: ToastConfig) {
-    const { maxItemToRender = 3, position = 'top-right' } = config;
+    const { maxItemToRender = 3, position = 'top-right', styles } = config;
     this.position = position;
     this.maxItemToRender = maxItemToRender;
+    if (styles) {
+      this.styles = { ...this.styles, ...styles };
+    }
+
     this.createToastContainer();
     this.createToastContentWrapper({ position: position });
   }
@@ -68,11 +102,15 @@ export class ToastVanilla {
       --offset-bottom:${this.offset}px;
       --offset-left:${this.offset}px;
       --width: 356px;
-      --border-radius:8px;
-      --success-color:green;
-      --error-color:red;
-      --warning-color:orange;
-      --info-color:lightblue;
+      --border-radius:${this.styles.borderRadius}px;
+      --success-color:${this.styles.successColor};
+      --error-color:${this.styles.errorColor};
+      --warning-color:${this.styles.warningColor};
+      --info-color:${this.styles.infoColor};
+      --text-color:${this.styles.textColor};
+      --text-color-foreground:${this.styles.textColorForeground};
+      --highlight-color:${this.styles.highlightColor};
+      --background:${this.styles.background};
       --gap:${this.gap}px;
     `;
 
@@ -162,6 +200,8 @@ export class ToastVanilla {
       message: toast.message,
     });
 
+    const icon = this.setToastIcon(toast.type);
+    toastEl.appendChild(icon);
     toastEl.appendChild(toastContent);
     this.toastContentWrapper.appendChild(toastEl);
 
@@ -169,7 +209,7 @@ export class ToastVanilla {
 
     // Set timeout for this specific toast
     const timeoutId = setTimeout(() => {
-      this.removeToasts(toastId);
+      // this.removeToasts(toastId);
     }, duration);
 
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
@@ -223,6 +263,7 @@ export class ToastVanilla {
     const titleEl = document.createElement('div');
     const descriptionEl = document.createElement('div');
 
+    titleEl.setAttribute('data-toast-title', '');
     titleEl.textContent = title;
     descriptionEl.textContent = message;
 
@@ -230,6 +271,34 @@ export class ToastVanilla {
     content.appendChild(descriptionEl);
 
     return content;
+  }
+
+  private setToastIcon(type: ToastType) {
+    const icon = document.createElement('span');
+    icon.setAttribute('data-set-icon', '');
+
+    switch (type) {
+      case 'error':
+        icon.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
+        break;
+
+      case 'warning':
+        icon.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert-icon lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+        break;
+
+      case 'info':
+        icon.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-warning-icon lucide-message-square-warning"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 15h.01"/><path d="M12 7v4"/></svg>';
+        break;
+      default:
+        icon.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-icon lucide-circle-check"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+        break;
+    }
+
+    return icon;
   }
 
   removeToasts(id: number) {
