@@ -9,6 +9,16 @@
   top: var(--offset-top);
   --y: translateY(-100%);
 }
+[data-toaster-content][data-position-x='right'] {
+  right: var(--offset-right);
+}
+[data-toaster-content][data-position-x='left'] {
+  left: var(--offset-left);
+}
+[data-toaster-content][data-position-y='bottom'] {
+  bottom: var(--offset-bottom);
+}
+
 [data-toast-item][data-mounted='true'] {
   --y: translateY(0);
   opacity: 1;
@@ -21,7 +31,7 @@
   opacity: 0;
   pointer-events: none;
 }
-[data-toast-item][data-toast-item][data-mounted='true'] {
+[data-toast-item][data-expanded='true'][data-mounted='true'] {
   --y: translateY(calc(var(--offset) * 1));
   height: var(--initial-height);
 }

@@ -1,5 +1,7 @@
+type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
 interface ToastOptions {
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  position?: ToastPosition;
   duration?: number;
   title?: string;
 }
@@ -28,13 +30,14 @@ export class ToastVanilla {
   toastContainer!: HTMLDivElement;
   toastContentWrapper!: HTMLOListElement;
   toasts: Toasts[] = [];
-  gap: number = 12;
-  initialHeight = 60;
+  gap: number = 16;
+  initialHeight: number = 60;
+  offset: number = 16;
+  position: ToastPosition = 'top-right';
 
-  constructor(
-    config: ToastConfig = { maxItemToRender: 3, position: 'top-right' },
-  ) {
-    const { maxItemToRender = 3, position } = config;
+  constructor(config: ToastConfig) {
+    const { maxItemToRender = 3, position = 'top-right' } = config;
+    this.position = position;
     this.maxItemToRender = maxItemToRender;
     this.createToastContainer();
     this.createToastContentWrapper({ position: position });
@@ -60,7 +63,10 @@ export class ToastVanilla {
     this.toastContentWrapper.setAttribute('data-position-x', x);
     // todo add the necessary css variables
     this.toastContentWrapper.style = `
-      --offset-top:16px;
+      --offset-top:${this.offset}px;
+      --offset-right:${this.offset}px;
+      --offset-bottom:${this.offset}px;
+      --offset-left:${this.offset}px;
       --width: 356px;
       --border-radius:8px;
       --success-color:green;
@@ -131,12 +137,8 @@ export class ToastVanilla {
     this.addToast(id, options);
   }
   addToast(toastId: number, options: ToastOptions = {}) {
-    const {
-      position = 'top-right',
-      duration = 3000,
-      title = 'Title',
-    } = options;
-    const [y, x] = position.split('-');
+    const { duration = 3000, title = 'Title' } = options;
+    const [y, x] = this.position.split('-');
 
     const toast = this.toasts.find((t) => t.id === toastId);
     if (!toast) return;
@@ -167,12 +169,25 @@ export class ToastVanilla {
 
     // Set timeout for this specific toast
     const timeoutId = setTimeout(() => {
-      this.removeToasts(toastId);
+      // this.removeToasts(toastId);
     }, duration);
 
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
     if (toastIndex !== -1) {
       this.toasts[toastIndex].timeoutId = timeoutId;
+    }
+  }
+
+  calcOffset(offsetY: number, direction: 'top' | 'bottom') {
+    switch (direction) {
+      case 'bottom':
+        return -(
+          (this.initialHeight + this.gap) * offsetY +
+          this.initialHeight +
+          this.gap / 2
+        );
+      default:
+        return (this.initialHeight + this.gap) * offsetY;
     }
   }
 
@@ -184,6 +199,7 @@ export class ToastVanilla {
     const toastElements = this.toastContentWrapper.querySelectorAll(
       '[data-toast-item="true"]',
     );
+    const [y, x] = this.position.split('-');
 
     toastElements.forEach((el, index) => {
       // Reverse order: last element (newest) gets offsetY = length - 1
@@ -193,7 +209,7 @@ export class ToastVanilla {
 
       (el as HTMLElement).style.setProperty(
         '--offset',
-        `${(this.initialHeight + this.gap) * offsetY}px`,
+        `${this.calcOffset(offsetY, y as 'top' | 'bottom')}px`,
       );
       (el as HTMLElement).style.setProperty('--z-index', zIndex.toString());
       el.setAttribute('data-visible', visible.toString());

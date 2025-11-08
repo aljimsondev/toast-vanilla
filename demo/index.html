@@ -231,8 +231,8 @@
 
     <script type="module">
       // Placeholder functions - replace with your actual toast package
-      import { toast } from '../dist/index.js';
-
+      import { ToastVanilla as Toast } from '../dist/index.js';
+      const toast = new Toast({ position: 'top-right' });
       window.showSuccess = function showSuccess(message) {
         toast.success(message);
       };
@@ -246,7 +246,7 @@
       };
 
       window.showInfo = function showInfo(message) {
-        toast.info(message);
+        toast.info(message, { title: 'Info' });
       };
 
       window.showCustom = function showCustom() {
