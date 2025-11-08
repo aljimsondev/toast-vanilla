@@ -2,12 +2,21 @@
   "name": "toast-vanilla",
   "version": "1.0.0",
   "description": "A lightweight fully customizable vanilla javascript toast!",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "toast"
+    "toast",
+    "toast-vanilla"
   ],
   "author": "aljimsondev",
   "license": "ISC",
