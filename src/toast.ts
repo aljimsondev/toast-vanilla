@@ -12,6 +12,7 @@ interface Toasts {
   message: string;
   options: ToastOptions;
   id: number;
+  timeoutId?: number;
 }
 interface ToastConfig extends ToastOptions {
   maxItemToRender: number;
@@ -28,6 +29,7 @@ export class ToastVanilla {
   toastContentWrapper!: HTMLOListElement;
   toasts: Toasts[] = [];
   gap: number = 12;
+  initialHeight = 60;
 
   constructor(
     config: ToastConfig = { maxItemToRender: 3, position: 'top-right' },
@@ -71,7 +73,10 @@ export class ToastVanilla {
     this.toastContainer.appendChild(this.toastContentWrapper);
   }
 
-  removeToastContentWrapper() {}
+  clearToastContentWrapper() {
+    this.toastContentWrapper.remove();
+    this.createToastContentWrapper();
+  }
 
   success(message: string, options: ToastOptions = {}) {
     const id = Date.now();
@@ -84,7 +89,7 @@ export class ToastVanilla {
       id: id,
     });
 
-    this.displayToasts(options);
+    this.addToast(id, options);
   }
   warn(message: string, options: ToastOptions = {}) {
     const id = Date.now();
@@ -97,7 +102,7 @@ export class ToastVanilla {
       id: id,
     });
 
-    this.displayToasts(options);
+    this.addToast(id, options);
   }
   error(message: string, options: ToastOptions = {}) {
     const id = Date.now();
@@ -110,7 +115,7 @@ export class ToastVanilla {
       id: id,
     });
 
-    this.displayToasts(options);
+    this.addToast(id, options);
   }
   info(message: string, options: ToastOptions = {}) {
     const id = Date.now();
@@ -123,12 +128,9 @@ export class ToastVanilla {
       id: id,
     });
 
-    this.displayToasts(options);
+    this.addToast(id, options);
   }
-  /**
-   * Displays toasts
-   */
-  displayToasts(options: ToastOptions = {}) {
+  addToast(toastId: number, options: ToastOptions = {}) {
     const {
       position = 'top-right',
       duration = 3000,
@@ -136,41 +138,65 @@ export class ToastVanilla {
     } = options;
     const [y, x] = position.split('-');
 
-    const initialHeight = 60;
+    const toast = this.toasts.find((t) => t.id === toastId);
+    if (!toast) return;
 
-    this.toasts.map((toast, index) => {
-      const currentIndex = index + 1;
-      const offsetY = this.toasts.length - currentIndex; // reversed the order of toast, new toast will pop up top
+    // Create new toast element (only happens once per toast)
+    const toastEl = document.createElement('li');
+    toastEl.setAttribute('data-toast-item', 'true');
+    toastEl.setAttribute('data-toast-variant', toast.type);
+    toastEl.setAttribute('data-position-y', y);
+    toastEl.setAttribute('data-position-x', x);
+    toastEl.setAttribute('data-toast-id', toast.id.toString());
+    toastEl.setAttribute('data-expanded', 'true');
+    toastEl.setAttribute('data-mounted', 'false');
 
-      const toastEl = document.createElement('li');
+    setTimeout(() => {
+      toastEl.setAttribute('data-mounted', 'true');
+    }, 100);
 
-      toastEl.setAttribute('data-toast-item', 'true');
-      toastEl.setAttribute('data-toast-variant', toast.type);
-      toastEl.setAttribute('data-position-y', y);
-      toastEl.setAttribute('data-position-x', x);
-      toastEl.setAttribute('data-toast-id', toast.id.toString());
-      toastEl.setAttribute('data-expanded', 'true');
-      toastEl.setAttribute(
-        'data-visible',
-        `${currentIndex <= this.maxItemToRender}`,
+    const toastContent = this.createToastContent({
+      title: title,
+      message: toast.message,
+    });
+
+    toastEl.appendChild(toastContent);
+    this.toastContentWrapper.appendChild(toastEl);
+
+    this.reorderToasts();
+
+    // Set timeout for this specific toast
+    const timeoutId = setTimeout(() => {
+      this.removeToasts(toastId);
+    }, duration);
+
+    const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
+    if (toastIndex !== -1) {
+      this.toasts[toastIndex].timeoutId = timeoutId;
+    }
+  }
+
+  /**
+   * Reorder all toasts by updating CSS variables
+   * Newest toast appears on top (index 0)
+   */
+  private reorderToasts() {
+    const toastElements = this.toastContentWrapper.querySelectorAll(
+      '[data-toast-item="true"]',
+    );
+
+    toastElements.forEach((el, index) => {
+      // Reverse order: last element (newest) gets offsetY = length - 1
+      const offsetY = toastElements.length - index - 1;
+      const zIndex = index + 1;
+      const visible = offsetY < this.maxItemToRender;
+
+      (el as HTMLElement).style.setProperty(
+        '--offset',
+        `${(this.initialHeight + this.gap) * offsetY}px`,
       );
-      toastEl.style = `
-        --offset:${(initialHeight + this.gap) * offsetY}px; 
-        --z-index: ${currentIndex}; 
-        --initial-height:${initialHeight}px;
-      `;
-
-      const toastContent = this.createToastContent({
-        title: title,
-        message: toast.message,
-      });
-      toastEl.appendChild(toastContent);
-
-      this.toastContentWrapper.appendChild(toastEl);
-
-      setTimeout(() => {
-        // this.removeToasts(toast.id);
-      }, duration);
+      (el as HTMLElement).style.setProperty('--z-index', zIndex.toString());
+      el.setAttribute('data-visible', visible.toString());
     });
   }
 
