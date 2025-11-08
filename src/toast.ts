@@ -169,7 +169,7 @@ export class ToastVanilla {
 
     // Set timeout for this specific toast
     const timeoutId = setTimeout(() => {
-      // this.removeToasts(toastId);
+      this.removeToasts(toastId);
     }, duration);
 
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
