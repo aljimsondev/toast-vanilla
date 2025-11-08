@@ -1,0 +1,15 @@
+[data-toaster-content] {
+  position: fixed;
+  width: var(--width);
+}
+
+[data-toaster-content][data-toaster-position-y='top'] {
+  top: var(--offset-top);
+}
+
+[data-toast-item] {
+  transform: var(--y);
+  overflow-wrap: anywhere;
+  z-index: var(--z-index);
+  height: var(--initial-height);
+}
