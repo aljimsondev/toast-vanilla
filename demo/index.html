@@ -151,13 +151,13 @@
         <div class="button-group">
           <button
             class="btn-success"
-            onclick="showSuccess('Success! Everything worked.')"
+            onclick="window.showSuccess('Success! Everything worked.')"
           >
             Success
           </button>
           <button
             class="btn-success"
-            onclick="showSuccess('Your changes have been saved.')"
+            onclick="window.showSuccess('Your changes have been saved.')"
           >
             Save
           </button>
@@ -169,11 +169,14 @@
         <div class="button-group">
           <button
             class="btn-error"
-            onclick="showError('Something went wrong.')"
+            onclick="window.showError('Something went wrong.')"
           >
             Error
           </button>
-          <button class="btn-error" onclick="showError('Failed to load data.')">
+          <button
+            class="btn-error"
+            onclick="window.showError('Failed to load data.')"
+          >
             Failed
           </button>
         </div>
@@ -184,13 +187,13 @@
         <div class="button-group">
           <button
             class="btn-warning"
-            onclick="showWarning('Warning! Please review.')"
+            onclick="window.showWarning('Warning! Please review.')"
           >
             Warning
           </button>
           <button
             class="btn-warning"
-            onclick="showWarning('This action cannot be undone.')"
+            onclick="window.showWarning('This action cannot be undone.')"
           >
             Caution
           </button>
@@ -202,11 +205,14 @@
         <div class="button-group">
           <button
             class="btn-info"
-            onclick="showInfo('Here is some information.')"
+            onclick="window.showInfo('Here is some information.')"
           >
             Info
           </button>
-          <button class="btn-info" onclick="showInfo('New update available!')">
+          <button
+            class="btn-info"
+            onclick="window.showInfo('New update available!')"
+          >
             Update
           </button>
         </div>
@@ -215,7 +221,7 @@
       <div class="demo-section">
         <h2>Custom</h2>
         <div class="button-group full">
-          <button class="btn-info" onclick="showCustom()">
+          <button class="btn-info" onclick="window.showCustom()">
             Show Custom Toast
           </button>
         </div>
@@ -226,30 +232,30 @@
       // Placeholder functions - replace with your actual toast package
       import { toast } from '../dist/index.js';
 
-      function showSuccess(message) {
+      window.showSuccess = function showSuccess(message) {
         console.log('Success:', message);
         alert(message);
-      }
+      };
 
-      function showError(message) {
+      window.showError = function showError(message) {
         console.log('Error:', message);
         alert(message);
-      }
+      };
 
-      function showWarning(message) {
+      window.showWarning = function showWarning(message) {
         console.log('Warning:', message);
         alert(message);
-      }
+      };
 
-      function showInfo(message) {
+      window.showInfo = function showInfo(message) {
         console.log('Info:', message);
         alert(message);
-      }
+      };
 
-      function showCustom() {
+      window.showCustom = function showCustom() {
         console.log('Custom toast');
         alert('This is a custom toast!');
-      }
+      };
 
       // When you build your toast package, replace the above functions with:
       // import { toast } from './dist/index.js';

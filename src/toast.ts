@@ -6,7 +6,6 @@ export class ToastVanilla {
   toastContainer!: HTMLDivElement;
   constructor() {
     this.createToastContainer();
-    console.log('running toast');
   }
   init() {}
 
