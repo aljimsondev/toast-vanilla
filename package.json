@@ -2,17 +2,19 @@
   "name": "toast-vanilla",
   "version": "1.0.0",
   "description": "A lightweight fully customizable vanilla javascript toast!",
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf dist",
+    "dev": "concurrently \"esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --watch\" \"tsc --emitDeclarationOnly --watch\"",
+    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=esm --minify --outfile=dist/index.min.js && tsc --emitDeclarationOnly"
   },
   "keywords": [
     "toast",
@@ -21,6 +23,8 @@
   "author": "aljimsondev",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.25.12",
     "typescript": "^5.9.3"
   }
 }
