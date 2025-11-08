@@ -1,0 +1,17 @@
+{
+  "name": "toast-vanilla",
+  "version": "1.0.0",
+  "description": "A lightweight fully customizable vanilla javascript toast!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "toast"
+  ],
+  "author": "aljimsondev",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
