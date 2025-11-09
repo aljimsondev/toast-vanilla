@@ -6,7 +6,13 @@ interface ToastOptions {
   title?: string;
 }
 
-type ToastType = 'success' | 'warning' | 'error' | 'info';
+interface ToastPromiseOptions<T> extends ToastOptions {
+  loading: string;
+  error: (e: Error) => string;
+  success: (data: T) => string;
+}
+
+type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
 
 interface Toasts {
   timestamp: Date;
@@ -15,6 +21,7 @@ interface Toasts {
   options: ToastOptions;
   id: number;
   timeoutId?: number;
+  callback?: () => Promise<any>;
 }
 type ToastStyle = {
   offset: number;
@@ -40,6 +47,7 @@ interface ToastConfig {
 interface ToastParams {
   message: string;
   title: string;
+  type: 'promise' | 'toast';
 }
 
 export class ToastVanilla {
@@ -174,6 +182,75 @@ export class ToastVanilla {
 
     this.addToast(id, options);
   }
+  async promise<T>(
+    callback: () => Promise<T>,
+    options: ToastPromiseOptions<T>,
+  ) {
+    const id = Date.now();
+
+    this.toasts.push({
+      timestamp: new Date(),
+      type: 'info',
+      message: '',
+      options: options,
+      id: id,
+      callback: callback,
+    });
+
+    this.addToastPromise(id, callback, options);
+  }
+
+  addToastPromise<T>(
+    toastId: number,
+    callback: () => Promise<T>,
+    options: ToastPromiseOptions<T>,
+  ) {
+    const { title = 'Title', error, loading, success } = options;
+    const [y, x] = this.position.split('-');
+
+    const toast = this.toasts.find((t) => t.id === toastId);
+    if (!toast) return;
+
+    // Create new toast element (only happens once per toast)
+    const toastEl = document.createElement('li');
+    toastEl.setAttribute('data-toast-item', 'true');
+    toastEl.setAttribute('data-toast-variant', toast.type);
+    toastEl.setAttribute('data-position-y', y);
+    toastEl.setAttribute('data-position-x', x);
+    toastEl.setAttribute('data-toast-id', toast.id.toString());
+    toastEl.setAttribute('data-expanded', 'true');
+    toastEl.setAttribute('data-mounted', 'false');
+
+    setTimeout(() => {
+      toastEl.setAttribute('data-mounted', 'true');
+    }, 100);
+
+    const content = this.createToastContent({
+      type: 'promise',
+      message: '',
+      title: '',
+    });
+
+    const iconWrapper = document.createElement('div');
+
+    const successIcon = this.setToastIcon('success');
+    const errorIcon = this.setToastIcon('error');
+    // loader icon
+    const loaderIcon = this.setToastIcon('loader');
+    loaderIcon.setAttribute('data-loader-icon', '');
+
+    callback()
+      .then((data) => {
+        const textResponse = success(data);
+      })
+      .catch((e) => {
+        const errorMessage = error(e);
+      })
+      .finally(() => {
+        // do the clean up
+      });
+  }
+
   addToast(toastId: number, options: ToastOptions = {}) {
     const { duration = 3000, title = 'Title' } = options;
     const [y, x] = this.position.split('-');
@@ -256,19 +333,25 @@ export class ToastVanilla {
     });
   }
 
-  createToastContent({ title, message }: ToastParams) {
+  createToastContent({ title, message, type = 'toast' }: ToastParams) {
     const content = document.createElement('div');
     content.className = 'toast-content';
 
-    const titleEl = document.createElement('div');
-    const descriptionEl = document.createElement('div');
+    if (type === 'toast') {
+      const titleEl = document.createElement('div');
+      const descriptionEl = document.createElement('div');
 
-    titleEl.setAttribute('data-toast-title', '');
-    titleEl.textContent = title;
-    descriptionEl.textContent = message;
+      titleEl.setAttribute('data-toast-title', '');
+      titleEl.textContent = title;
+      descriptionEl.textContent = message;
 
-    content.appendChild(titleEl);
-    content.appendChild(descriptionEl);
+      content.appendChild(titleEl);
+      content.appendChild(descriptionEl);
+    } else {
+      const promiseEl = document.createElement('div');
+      promiseEl.setAttribute('data-promise-content', '');
+      content.appendChild(promiseEl);
+    }
 
     return content;
   }
@@ -291,6 +374,10 @@ export class ToastVanilla {
       case 'info':
         icon.innerHTML =
           '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-warning-icon lucide-message-square-warning"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 15h.01"/><path d="M12 7v4"/></svg>';
+        break;
+      case 'loader':
+        icon.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle-icon lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
         break;
       default:
         icon.innerHTML =

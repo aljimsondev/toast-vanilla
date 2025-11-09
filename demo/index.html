@@ -222,8 +222,8 @@
       <div class="demo-section">
         <h2>Custom</h2>
         <div class="button-group full">
-          <button class="btn-info" onclick="window.showCustom()">
-            Show Custom Toast
+          <button class="btn-info" onclick="window.showPromiseToast()">
+            Promise
           </button>
         </div>
       </div>
@@ -251,9 +251,25 @@
         toast.info(message, { title: 'Info' });
       };
 
-      window.showCustom = function showCustom() {
-        console.log('Custom toast');
-        alert('This is a custom toast!');
+      window.showPromiseToast = function showCustom() {
+        toast.promise(
+          () =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve('Promise has been resolve!');
+              }, 3000);
+            }),
+          {
+            loading: 'Loading promise...',
+            success: (message) => {
+              console.log(message);
+              return message;
+            },
+            error: (e) => {
+              return e?.message;
+            },
+          },
+        );
       };
 
       // When you build your toast package, replace the above functions with:
