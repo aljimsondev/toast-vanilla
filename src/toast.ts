@@ -190,7 +190,7 @@ export class ToastVanilla {
 
     this.toasts.push({
       timestamp: new Date(),
-      type: 'info',
+      type: 'loader',
       message: '',
       options: options,
       id: id,
@@ -225,30 +225,83 @@ export class ToastVanilla {
       toastEl.setAttribute('data-mounted', 'true');
     }, 100);
 
-    const content = this.createToastContent({
+    const toastContent = this.createToastContent({
       type: 'promise',
       message: '',
       title: '',
     });
 
-    const iconWrapper = document.createElement('div');
+    // get toast promise content wrapper
+    const toastContentMain = toastContent.querySelector(
+      '[data-promise-content]',
+    ) as Element;
 
-    const successIcon = this.setToastIcon('success');
-    const errorIcon = this.setToastIcon('error');
     // loader icon
     const loaderIcon = this.setToastIcon('loader');
     loaderIcon.setAttribute('data-loader-icon', '');
 
+    toastContentMain.appendChild(loaderIcon);
+    // create text
+    const text = document.createElement('p');
+    text.textContent = loading;
+
+    // append text
+    toastContentMain.appendChild(text);
+
+    toastEl.appendChild(toastContent);
+    this.toastContentWrapper.appendChild(toastEl);
+
+    this.reorderToasts();
+
+    // Set timeout for this specific toast
+    const timeoutId = setTimeout(() => {
+      // this.removeToasts(toastId);
+    }, 3000);
+
     callback()
       .then((data) => {
         const textResponse = success(data);
+        this.updatePromiseIcon('success');
+        this.updatePromiseMessage(textResponse);
       })
       .catch((e) => {
         const errorMessage = error(e);
+        this.updatePromiseIcon('error');
+        this.updatePromiseMessage(errorMessage);
       })
       .finally(() => {
         // do the clean up
       });
+  }
+
+  updatePromiseMessage(message: string) {
+    const toastContent = document.querySelector('[data-promise-content]');
+    if (!toastContent) return;
+
+    const text = toastContent.querySelector('p');
+    if (text) {
+      text.textContent = message;
+    }
+  }
+
+  updatePromiseIcon(status: 'success' | 'error') {
+    const toastContent = document.querySelector('[data-promise-content]');
+    if (!toastContent) return;
+
+    const icon = toastContent.querySelector('[data-set-icon]');
+
+    let newIcon: HTMLSpanElement;
+
+    switch (status) {
+      case 'error':
+        newIcon = this.setToastIcon('error');
+        break;
+      default:
+        newIcon = this.setToastIcon('success');
+        break;
+    }
+
+    toastContent.replaceChild(newIcon, icon!);
   }
 
   addToast(toastId: number, options: ToastOptions = {}) {
@@ -275,6 +328,7 @@ export class ToastVanilla {
     const toastContent = this.createToastContent({
       title: title,
       message: toast.message,
+      type: 'toast',
     });
 
     const icon = this.setToastIcon(toast.type);
@@ -359,6 +413,7 @@ export class ToastVanilla {
   private setToastIcon(type: ToastType) {
     const icon = document.createElement('span');
     icon.setAttribute('data-set-icon', '');
+    icon.setAttribute('data-icon-type', type);
 
     switch (type) {
       case 'error':
