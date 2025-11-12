@@ -258,31 +258,47 @@ export class ToastVanilla {
     callback()
       .then((data) => {
         const textResponse = success(data);
-        this.updatePromiseIcon('success', toastId);
-        this.updatePromiseMessage(textResponse, toastId);
+        this.updatePromiseToast(toastEl, {
+          message: textResponse,
+          status: 'success',
+        });
       })
       .catch((e) => {
         const errorMessage = error(e);
-        this.updatePromiseIcon('error', toastId);
-        this.updatePromiseMessage(errorMessage, toastId);
+        this.updatePromiseToast(toastEl, {
+          message: errorMessage,
+          status: 'error',
+        });
       })
       .finally(() => {
         // Set timeout for this specific toast
-        const timeoutId = setTimeout(() => {
-          this.removeToasts(toastId);
-        }, 3000);
-
-        const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
-        if (toastIndex !== -1) {
-          this.toasts[toastIndex].timeoutId = timeoutId;
-        }
+        this.handlePromiseComplete(toastId);
       });
   }
 
-  updatePromiseMessage(message: string, toastId: number | string) {
-    const toastContent = document.querySelector(
-      `data-promise-content=${toastId}]`,
-    );
+  handlePromiseComplete(toastId: number) {
+    // Handle promise with proper cleanup
+    const timeoutId = setTimeout(() => {
+      this.removeToasts(toastId);
+    }, 3000);
+
+    // Store timeout ID for cleanup if toast is manually dismissed
+    const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
+    if (toastIndex !== -1) {
+      this.toasts[toastIndex].timeoutId = timeoutId;
+    }
+  }
+
+  updatePromiseToast(
+    toastEl: HTMLLIElement,
+    { message, status }: { status: 'success' | 'error'; message: string },
+  ) {
+    this.updatePromiseIcon(toastEl, status);
+    this.updatePromiseMessage(toastEl, message);
+  }
+
+  updatePromiseMessage(toastEl: HTMLLIElement, message: string) {
+    const toastContent = toastEl.querySelector(`[data-promise-content]`);
     if (!toastContent) return;
 
     const text = toastContent.querySelector('p');
@@ -291,10 +307,8 @@ export class ToastVanilla {
     }
   }
 
-  updatePromiseIcon(status: 'success' | 'error', toastId: number | string) {
-    const toastContent = document.querySelector(
-      `[data-promise-content="${toastId}"]`,
-    );
+  updatePromiseIcon(toastEl: HTMLLIElement, status: 'success' | 'error') {
+    const toastContent = toastEl.querySelector(`[data-promise-content]`);
     if (!toastContent) return;
 
     const icon = toastContent.querySelector('[data-set-icon]');
