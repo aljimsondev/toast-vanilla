@@ -48,6 +48,7 @@ interface ToastParams {
   message: string;
   title: string;
   type: 'promise' | 'toast';
+  id: string | number;
 }
 
 export class ToastVanilla {
@@ -205,7 +206,7 @@ export class ToastVanilla {
     callback: () => Promise<T>,
     options: ToastPromiseOptions<T>,
   ) {
-    const { title = 'Title', error, loading, success } = options;
+    const { error, loading, success } = options;
     const [y, x] = this.position.split('-');
 
     const toast = this.toasts.find((t) => t.id === toastId);
@@ -229,6 +230,7 @@ export class ToastVanilla {
       type: 'promise',
       message: '',
       title: '',
+      id: toastId,
     });
 
     // get toast promise content wrapper
@@ -253,29 +255,34 @@ export class ToastVanilla {
 
     this.reorderToasts();
 
-    // Set timeout for this specific toast
-    const timeoutId = setTimeout(() => {
-      // this.removeToasts(toastId);
-    }, 3000);
-
     callback()
       .then((data) => {
         const textResponse = success(data);
-        this.updatePromiseIcon('success');
-        this.updatePromiseMessage(textResponse);
+        this.updatePromiseIcon('success', toastId);
+        this.updatePromiseMessage(textResponse, toastId);
       })
       .catch((e) => {
         const errorMessage = error(e);
-        this.updatePromiseIcon('error');
-        this.updatePromiseMessage(errorMessage);
+        this.updatePromiseIcon('error', toastId);
+        this.updatePromiseMessage(errorMessage, toastId);
       })
       .finally(() => {
-        // do the clean up
+        // Set timeout for this specific toast
+        const timeoutId = setTimeout(() => {
+          this.removeToasts(toastId);
+        }, 3000);
+
+        const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
+        if (toastIndex !== -1) {
+          this.toasts[toastIndex].timeoutId = timeoutId;
+        }
       });
   }
 
-  updatePromiseMessage(message: string) {
-    const toastContent = document.querySelector('[data-promise-content]');
+  updatePromiseMessage(message: string, toastId: number | string) {
+    const toastContent = document.querySelector(
+      `data-promise-content=${toastId}]`,
+    );
     if (!toastContent) return;
 
     const text = toastContent.querySelector('p');
@@ -284,8 +291,10 @@ export class ToastVanilla {
     }
   }
 
-  updatePromiseIcon(status: 'success' | 'error') {
-    const toastContent = document.querySelector('[data-promise-content]');
+  updatePromiseIcon(status: 'success' | 'error', toastId: number | string) {
+    const toastContent = document.querySelector(
+      `[data-promise-content="${toastId}"]`,
+    );
     if (!toastContent) return;
 
     const icon = toastContent.querySelector('[data-set-icon]');
@@ -329,6 +338,7 @@ export class ToastVanilla {
       title: title,
       message: toast.message,
       type: 'toast',
+      id: toastId,
     });
 
     const icon = this.setToastIcon(toast.type);
@@ -340,7 +350,7 @@ export class ToastVanilla {
 
     // Set timeout for this specific toast
     const timeoutId = setTimeout(() => {
-      // this.removeToasts(toastId);
+      this.removeToasts(toastId);
     }, duration);
 
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
