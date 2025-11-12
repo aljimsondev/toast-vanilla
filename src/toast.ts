@@ -594,7 +594,15 @@ export class ToastVanilla {
    * @param {number} id - The unique identifier of the toast to remove
    */
   private removeToasts(id: number) {
+    // clear toast timeout
+    const toastIndex = this.toasts.findIndex((toast) => toast.id === id);
+    if (toastIndex !== -1 && this.toasts[toastIndex].timeoutId) {
+      clearTimeout(this.toasts[toastIndex].timeoutId);
+    }
+
+    // update toasts array
     this.toasts = this.toasts.filter((toast) => toast.id !== id);
+
     const targetToast = this.toastContentWrapper?.querySelector(
       `[data-toast-id="${id}"]`,
     );
