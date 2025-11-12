@@ -23,6 +23,7 @@ interface Toasts {
   timeoutId?: number;
   callback?: () => Promise<any>;
 }
+
 type ToastStyle = {
   offset: number;
   borderRadius: number;
@@ -51,16 +52,21 @@ interface ToastParams {
   id: string | number;
 }
 
+/**
+ * ToastVanilla - A vanilla JavaScript toast notification system
+ * Provides a lightweight, configuration-driven toast notification display with support for
+ * standard toasts and promise-based notifications with loading states.
+ */
 export class ToastVanilla {
-  maxItemToRender: number;
-  toastContainer!: HTMLDivElement;
-  toastContentWrapper!: HTMLOListElement;
-  toasts: Toasts[] = [];
-  gap: number = 16;
-  initialHeight: number = 60;
-  offset: number = 16;
-  position: ToastPosition = 'top-right';
-  styles: ToastStyle = {
+  private maxItemToRender: number;
+  private toastContainer!: HTMLDivElement;
+  private toastContentWrapper!: HTMLOListElement;
+  private toasts: Toasts[] = [];
+  private gap: number = 16;
+  private initialHeight: number = 60;
+  private offset: number = 16;
+  private position: ToastPosition = 'top-right';
+  private styles: ToastStyle = {
     borderRadius: 8,
     errorColor: 'oklch(0.577 0.245 27.325)',
     gap: 16,
@@ -74,6 +80,13 @@ export class ToastVanilla {
     offset: 16,
   };
 
+  /**
+   * Initializes the ToastVanilla instance with configuration
+   * @param {ToastConfig} config - Configuration object for the toast system
+   * @param {number} [config.maxItemToRender=3] - Maximum number of visible toasts
+   * @param {ToastPosition} [config.position='top-right'] - Position of toast container
+   * @param {ToastStyle} [config.styles] - Custom style overrides
+   */
   constructor(config: ToastConfig) {
     const { maxItemToRender = 3, position = 'top-right', styles } = config;
     this.position = position;
@@ -85,9 +98,12 @@ export class ToastVanilla {
     this.createToastContainer();
     this.createToastContentWrapper({ position: position });
   }
-  init() {}
 
-  createToastContainer() {
+  /**
+   * Creates the main toast container element and appends it to the DOM
+   * @private
+   */
+  private createToastContainer() {
     this.toastContainer = document.createElement('div');
     this.toastContainer.id = 'toast-container';
     this.toastContainer.setAttribute('data-toaster-container', 'true');
@@ -96,7 +112,11 @@ export class ToastVanilla {
     document.body.appendChild(this.toastContainer);
   }
 
-  createToastContentWrapper(options: ToastOptions = {}) {
+  /**
+   * Creates the ordered list wrapper for toast items with position and styling
+   * @param {ToastOptions} [options={}] - Options including position
+   */
+  private createToastContentWrapper(options: ToastOptions = {}) {
     const { position = 'top-left' } = options;
     const [y, x] = position.split('-');
     this.toastContentWrapper = document.createElement('ol');
@@ -126,11 +146,20 @@ export class ToastVanilla {
     this.toastContainer.appendChild(this.toastContentWrapper);
   }
 
-  clearToastContentWrapper() {
+  /**
+   * Clears the existing toast content wrapper and creates a new one
+   * Useful for resetting the toast display state
+   */
+  private clearToastContentWrapper() {
     this.toastContentWrapper.remove();
     this.createToastContentWrapper();
   }
 
+  /**
+   * Displays a success toast notification
+   * @param {string} message - The message content to display
+   * @param {ToastOptions} [options={}] - Optional toast configuration
+   */
   success(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
@@ -144,6 +173,12 @@ export class ToastVanilla {
 
     this.addToast(id, options);
   }
+
+  /**
+   * Displays a warning toast notification
+   * @param {string} message - The message content to display
+   * @param {ToastOptions} [options={}] - Optional toast configuration
+   */
   warn(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
@@ -157,6 +192,12 @@ export class ToastVanilla {
 
     this.addToast(id, options);
   }
+
+  /**
+   * Displays an error toast notification
+   * @param {string} message - The message content to display
+   * @param {ToastOptions} [options={}] - Optional toast configuration
+   */
   error(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
@@ -170,6 +211,12 @@ export class ToastVanilla {
 
     this.addToast(id, options);
   }
+
+  /**
+   * Displays an info toast notification
+   * @param {string} message - The message content to display
+   * @param {ToastOptions} [options={}] - Optional toast configuration
+   */
   info(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
@@ -183,6 +230,14 @@ export class ToastVanilla {
 
     this.addToast(id, options);
   }
+
+  /**
+   * Displays a promise-based toast that tracks loading, success, and error states
+   * @template T - The type of data returned by the promise
+   * @param {() => Promise<T>} callback - The async function to execute and track
+   * @param {ToastPromiseOptions<T>} options - Configuration including loading/success/error messages
+   * @returns {Promise<void>}
+   */
   async promise<T>(
     callback: () => Promise<T>,
     options: ToastPromiseOptions<T>,
@@ -201,7 +256,16 @@ export class ToastVanilla {
     this.addToastPromise(id, callback, options);
   }
 
-  addToastPromise<T>(
+  /**
+   * Internal method to handle promise toast creation and state transitions
+   * Executes the callback and updates the toast based on promise resolution
+   * @template T - The type of data returned by the promise
+   * @param {number} toastId - Unique identifier for the toast
+   * @param {() => Promise<T>} callback - The async function to execute
+   * @param {ToastPromiseOptions<T>} options - Configuration for loading/success/error states
+   * @private
+   */
+  private addToastPromise<T>(
     toastId: number,
     callback: () => Promise<T>,
     options: ToastPromiseOptions<T>,
@@ -276,7 +340,13 @@ export class ToastVanilla {
       });
   }
 
-  handlePromiseComplete(toastId: number) {
+  /**
+   * Handles the completion of a promise toast
+   * Sets a timeout to automatically remove the toast and stores the timeout ID for cleanup
+   * @param {number} toastId - Unique identifier of the toast to complete
+   * @private
+   */
+  private handlePromiseComplete(toastId: number) {
     // Handle promise with proper cleanup
     const timeoutId = setTimeout(() => {
       this.removeToasts(toastId);
@@ -289,7 +359,15 @@ export class ToastVanilla {
     }
   }
 
-  updatePromiseToast(
+  /**
+   * Updates a promise toast with new status and message
+   * @param {HTMLLIElement} toastEl - The toast DOM element to update
+   * @param {Object} config - Configuration object
+   * @param {'success' | 'error'} config.status - The new status of the promise
+   * @param {string} config.message - The message to display
+   * @private
+   */
+  private updatePromiseToast(
     toastEl: HTMLLIElement,
     { message, status }: { status: 'success' | 'error'; message: string },
   ) {
@@ -297,7 +375,13 @@ export class ToastVanilla {
     this.updatePromiseMessage(toastEl, message);
   }
 
-  updatePromiseMessage(toastEl: HTMLLIElement, message: string) {
+  /**
+   * Updates the message text of a promise toast
+   * @param {HTMLLIElement} toastEl - The toast DOM element
+   * @param {string} message - The new message text to display
+   * @private
+   */
+  private updatePromiseMessage(toastEl: HTMLLIElement, message: string) {
     const toastContent = toastEl.querySelector(`[data-promise-content]`);
     if (!toastContent) return;
 
@@ -307,7 +391,16 @@ export class ToastVanilla {
     }
   }
 
-  updatePromiseIcon(toastEl: HTMLLIElement, status: 'success' | 'error') {
+  /**
+   * Updates the icon of a promise toast based on the new status
+   * @param {HTMLLIElement} toastEl - The toast DOM element
+   * @param {'success' | 'error'} status - The status determining which icon to display
+   * @private
+   */
+  private updatePromiseIcon(
+    toastEl: HTMLLIElement,
+    status: 'success' | 'error',
+  ) {
     const toastContent = toastEl.querySelector(`[data-promise-content]`);
     if (!toastContent) return;
 
@@ -327,7 +420,13 @@ export class ToastVanilla {
     toastContent.replaceChild(newIcon, icon!);
   }
 
-  addToast(toastId: number, options: ToastOptions = {}) {
+  /**
+   * Internal method to create and display a standard toast notification
+   * @param {number} toastId - Unique identifier for the toast
+   * @param {ToastOptions} [options={}] - Toast configuration
+   * @private
+   */
+  private addToast(toastId: number, options: ToastOptions = {}) {
     const { duration = 3000, title = 'Title' } = options;
     const [y, x] = this.position.split('-');
 
@@ -373,7 +472,15 @@ export class ToastVanilla {
     }
   }
 
-  calcOffset(offsetY: number, direction: 'top' | 'bottom') {
+  /**
+   * Calculates the vertical offset for a toast based on its position in the stack
+   * Used to properly position toasts vertically with gaps
+   * @param {number} offsetY - The index position of the toast in the stack
+   * @param {'top' | 'bottom'} direction - Whether toasts stack from top or bottom
+   * @returns {number} The calculated offset in pixels
+   * @private
+   */
+  private calcOffset(offsetY: number, direction: 'top' | 'bottom') {
     switch (direction) {
       case 'bottom':
         return -(
@@ -387,8 +494,9 @@ export class ToastVanilla {
   }
 
   /**
-   * Reorder all toasts by updating CSS variables
-   * Newest toast appears on top (index 0)
+   * Reorders all toasts by updating their CSS variables for positioning and z-index
+   * Newest toast appears on top (index 0) and only visible toasts up to maxItemToRender are shown
+   * @private
    */
   private reorderToasts() {
     const toastElements = this.toastContentWrapper.querySelectorAll(
@@ -411,7 +519,14 @@ export class ToastVanilla {
     });
   }
 
-  createToastContent({ title, message, type = 'toast' }: ToastParams) {
+  /**
+   * Creates the content wrapper element for a toast
+   * Differentiates between standard toast and promise toast layouts
+   * @param {ToastParams} params - Configuration for the toast content
+   * @returns {HTMLDivElement} The created content wrapper element
+   * @private
+   */
+  private createToastContent({ title, message, type = 'toast' }: ToastParams) {
     const content = document.createElement('div');
     content.className = 'toast-content';
 
@@ -434,6 +549,12 @@ export class ToastVanilla {
     return content;
   }
 
+  /**
+   * Creates an SVG icon element based on the toast type
+   * @param {ToastType} type - The type of toast (success, error, warning, info, loader)
+   * @returns {HTMLSpanElement} The icon element with embedded SVG
+   * @private
+   */
   private setToastIcon(type: ToastType) {
     const icon = document.createElement('span');
     icon.setAttribute('data-set-icon', '');
@@ -467,7 +588,12 @@ export class ToastVanilla {
     return icon;
   }
 
-  removeToasts(id: number) {
+  /**
+   * Removes a toast notification from both the DOM and internal tracking array
+   * Also clears any pending timeout to prevent memory leaks
+   * @param {number} id - The unique identifier of the toast to remove
+   */
+  private removeToasts(id: number) {
     this.toasts = this.toasts.filter((toast) => toast.id !== id);
     const targetToast = this.toastContentWrapper?.querySelector(
       `[data-toast-id="${id}"]`,
@@ -477,7 +603,11 @@ export class ToastVanilla {
     }
   }
 
-  showToast() {
+  /**
+   * Creates and appends a new toast element to the container
+   * @private
+   */
+  private showToast() {
     const toast = document.createElement('div');
 
     this.toastContainer.appendChild(toast);
