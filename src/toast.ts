@@ -14,7 +14,7 @@ interface ToastPromiseOptions<T> extends ToastOptions {
 
 type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
 
-interface Toasts {
+interface Toast {
   timestamp: Date;
   type: ToastType;
   message: string;
@@ -61,11 +61,13 @@ export class ToastVanilla {
   private maxItemToRender: number;
   private toastContainer!: HTMLDivElement;
   private toastContentWrapper!: HTMLOListElement;
-  private toasts: Toasts[] = [];
+  private toasts: Toast[] = [];
   private gap: number = 16;
   private initialHeight: number = 60;
   private offset: number = 16;
   private position: ToastPosition = 'top-right';
+  private lastNode: HTMLLIElement | null = null;
+  private duration: number;
   private styles: ToastStyle = {
     borderRadius: 8,
     errorColor: 'oklch(0.577 0.245 27.325)',
@@ -88,9 +90,15 @@ export class ToastVanilla {
    * @param {ToastStyle} [config.styles] - Custom style overrides
    */
   constructor(config: ToastConfig) {
-    const { maxItemToRender = 3, position = 'top-right', styles } = config;
+    const {
+      maxItemToRender = 3,
+      position = 'top-right',
+      styles,
+      duration = 3000,
+    } = config;
     this.position = position;
     this.maxItemToRender = maxItemToRender;
+    this.duration = duration;
     if (styles) {
       this.styles = { ...this.styles, ...styles };
     }
@@ -162,8 +170,7 @@ export class ToastVanilla {
    */
   success(message: string, options: ToastOptions = {}) {
     const id = Date.now();
-
-    this.toasts.push({
+    this.setToast({
       timestamp: new Date(),
       type: 'success',
       message: message,
@@ -182,7 +189,7 @@ export class ToastVanilla {
   warn(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
-    this.toasts.push({
+    this.setToast({
       timestamp: new Date(),
       type: 'warning',
       message: message,
@@ -201,7 +208,7 @@ export class ToastVanilla {
   error(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
-    this.toasts.push({
+    this.setToast({
       timestamp: new Date(),
       type: 'error',
       message: message,
@@ -220,7 +227,7 @@ export class ToastVanilla {
   info(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
-    this.toasts.push({
+    this.setToast({
       timestamp: new Date(),
       type: 'info',
       message: message,
@@ -244,7 +251,7 @@ export class ToastVanilla {
   ) {
     const id = Date.now();
 
-    this.toasts.push({
+    this.setToast({
       timestamp: new Date(),
       type: 'loader',
       message: '',
@@ -313,10 +320,19 @@ export class ToastVanilla {
 
     // append text
     toastContentMain.appendChild(text);
-
+    // append toast content
     toastEl.appendChild(toastContent);
-    this.toastContentWrapper.appendChild(toastEl);
 
+    if (this.lastNode) {
+      this.toastContentWrapper.insertBefore(toastEl, this.lastNode);
+    } else {
+      this.toastContentWrapper.appendChild(toastEl);
+    }
+
+    // set as last node
+    this.setLastNode(toastEl);
+
+    // apply update css properties
     this.reorderToasts();
 
     callback()
@@ -335,9 +351,36 @@ export class ToastVanilla {
         });
       })
       .finally(() => {
-        // Set timeout for this specific toast
-        this.handlePromiseComplete(toastId);
+        this.handleComplete(toastId);
       });
+  }
+
+  /**
+   * Set new toast
+   * @param toast
+   */
+  setToast(toast: Toast) {
+    const old = this.toasts;
+    // this will placed the new item to the first array
+    this.toasts = [toast].concat(old);
+  }
+
+  /**
+   * Set node as the last node added in the toast container
+   * @param node
+   */
+  setLastNode(node: HTMLLIElement) {
+    this.lastNode = node;
+  }
+
+  /**
+   * Update the last node if it is the item that is currently queued for removal
+   * @param node
+   */
+  updateLastNode(node: HTMLLIElement) {
+    if (this.lastNode && this.lastNode === node) {
+      this.lastNode = null;
+    }
   }
 
   /**
@@ -346,11 +389,11 @@ export class ToastVanilla {
    * @param {number} toastId - Unique identifier of the toast to complete
    * @private
    */
-  private handlePromiseComplete(toastId: number) {
+  private handleComplete(toastId: number) {
     // Handle promise with proper cleanup
     const timeoutId = setTimeout(() => {
-      this.removeToasts(toastId);
-    }, 3000);
+      this.removeToast(toastId);
+    }, this.duration);
 
     // Store timeout ID for cleanup if toast is manually dismissed
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
@@ -427,7 +470,7 @@ export class ToastVanilla {
    * @private
    */
   private addToast(toastId: number, options: ToastOptions = {}) {
-    const { duration = 3000, title = 'Title' } = options;
+    const { title = 'Title' } = options;
     const [y, x] = this.position.split('-');
 
     const toast = this.toasts.find((t) => t.id === toastId);
@@ -457,19 +500,20 @@ export class ToastVanilla {
     const icon = this.setToastIcon(toast.type);
     toastEl.appendChild(icon);
     toastEl.appendChild(toastContent);
-    this.toastContentWrapper.appendChild(toastEl);
-
-    this.reorderToasts();
-
-    // Set timeout for this specific toast
-    const timeoutId = setTimeout(() => {
-      this.removeToasts(toastId);
-    }, duration);
-
-    const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
-    if (toastIndex !== -1) {
-      this.toasts[toastIndex].timeoutId = timeoutId;
+    // if theres an old node inserted, insert before the node to appear first
+    if (this.lastNode) {
+      this.toastContentWrapper.insertBefore(toastEl, this.lastNode);
+    } else {
+      this.toastContentWrapper.appendChild(toastEl);
     }
+
+    // mark as last node attached
+    this.setLastNode(toastEl);
+
+    // reorder toasts
+    this.reorderToasts();
+    // handle the toast completion
+    this.handleComplete(toastId);
   }
 
   /**
@@ -477,10 +521,19 @@ export class ToastVanilla {
    * Used to properly position toasts vertically with gaps
    * @param {number} offsetY - The index position of the toast in the stack
    * @param {'top' | 'bottom'} direction - Whether toasts stack from top or bottom
+   * @param {number} elementHeight - Toast element height
    * @returns {number} The calculated offset in pixels
    * @private
    */
-  private calcOffset(offsetY: number, direction: 'top' | 'bottom') {
+  private calcOffset({
+    direction,
+    offsetY,
+    elementHeight,
+  }: {
+    offsetY: number;
+    direction: 'top' | 'bottom';
+    elementHeight: number;
+  }) {
     switch (direction) {
       case 'bottom':
         return -(
@@ -504,18 +557,18 @@ export class ToastVanilla {
     );
     const [y, x] = this.position.split('-');
 
-    toastElements.forEach((el, index) => {
-      // Reverse order: last element (newest) gets offsetY = length - 1
-      const offsetY = toastElements.length - index - 1;
-      const zIndex = index + 1;
-      const visible = offsetY < this.maxItemToRender;
+    let startY = 0;
 
-      (el as HTMLElement).style.setProperty(
-        '--offset',
-        `${this.calcOffset(offsetY, y as 'top' | 'bottom')}px`,
-      );
+    toastElements.forEach((el, index) => {
+      const zIndex = index + 1;
+      const visible = index + 1 <= this.maxItemToRender;
+      const height = el.getBoundingClientRect().height;
+
+      (el as HTMLElement).style.setProperty('--offset', `${startY}px`);
       (el as HTMLElement).style.setProperty('--z-index', zIndex.toString());
       el.setAttribute('data-visible', visible.toString());
+
+      startY += height + this.gap;
     });
   }
 
@@ -593,7 +646,7 @@ export class ToastVanilla {
    * Also clears any pending timeout to prevent memory leaks
    * @param {number} id - The unique identifier of the toast to remove
    */
-  private removeToasts(id: number) {
+  private removeToast(id: number) {
     // clear toast timeout
     const toastIndex = this.toasts.findIndex((toast) => toast.id === id);
     if (toastIndex !== -1 && this.toasts[toastIndex].timeoutId) {
@@ -608,16 +661,7 @@ export class ToastVanilla {
     );
     if (targetToast && this.toastContentWrapper) {
       this.toastContentWrapper.removeChild(targetToast);
+      this.updateLastNode(targetToast as HTMLLIElement);
     }
-  }
-
-  /**
-   * Creates and appends a new toast element to the container
-   * @private
-   */
-  private showToast() {
-    const toast = document.createElement('div');
-
-    this.toastContainer.appendChild(toast);
   }
 }
