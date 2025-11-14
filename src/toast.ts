@@ -662,7 +662,10 @@ export class ToastVanilla {
     );
     if (targetToast && this.toastContentWrapper) {
       this.toastContentWrapper.removeChild(targetToast);
+      // check of removed node is the lastNode in the memory
       this.updateLastNode(targetToast as HTMLLIElement);
+      // reorder toast after the node removal
+      this.reorderToasts();
     }
   }
 }
