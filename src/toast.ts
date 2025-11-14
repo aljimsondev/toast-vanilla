@@ -521,28 +521,23 @@ export class ToastVanilla {
    * Used to properly position toasts vertically with gaps
    * @param {number} offsetY - The index position of the toast in the stack
    * @param {'top' | 'bottom'} direction - Whether toasts stack from top or bottom
-   * @param {number} elementHeight - Toast element height
    * @returns {number} The calculated offset in pixels
    * @private
    */
   private calcOffset({
     direction,
     offsetY,
-    elementHeight,
+    height,
   }: {
     offsetY: number;
     direction: 'top' | 'bottom';
-    elementHeight: number;
+    height: number;
   }) {
     switch (direction) {
       case 'bottom':
-        return -(
-          (this.initialHeight + this.gap) * offsetY +
-          this.initialHeight +
-          this.gap / 2
-        );
+        return -(offsetY + height);
       default:
-        return (this.initialHeight + this.gap) * offsetY;
+        return offsetY;
     }
   }
 
@@ -564,7 +559,13 @@ export class ToastVanilla {
       const visible = index + 1 <= this.maxItemToRender;
       const height = el.getBoundingClientRect().height;
 
-      (el as HTMLElement).style.setProperty('--offset', `${startY}px`);
+      const offsetY = this.calcOffset({
+        direction: y as 'top' | 'bottom',
+        offsetY: startY,
+        height,
+      });
+
+      (el as HTMLElement).style.setProperty('--offset', `${offsetY}px`);
       (el as HTMLElement).style.setProperty('--z-index', zIndex.toString());
       el.setAttribute('data-visible', visible.toString());
 
