@@ -6,7 +6,6 @@ interface PromiseOptions<T> {
   loading?: string;
   error?: (e: Error) => string;
   success?: (data: T) => string;
-  callback?: () => T;
 }
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
@@ -215,7 +214,7 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  warn(message: string, options: ToastOptions) {
+  warn(message: string, options: ToastOptions = {}) {
     const id = Date.now();
 
     this.setToast({
