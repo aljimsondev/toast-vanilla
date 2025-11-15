@@ -2,7 +2,17 @@ import { ToastVanilla } from '../../../dist/index';
 import '../../../dist/index.css';
 import './App.css';
 
-const toast = new ToastVanilla({ position: 'top-left', maxItemToRender: 3 });
+const toast = new ToastVanilla({
+  position: 'top-left',
+  maxItemToRender: 3,
+  styles: {
+    background: 'var(--foreground)',
+    textColor: 'var(--secondary)',
+    highlightColor: 'var(--primary-foreground)',
+    offset: 0,
+    gap: 10,
+  },
+});
 
 function App() {
   const handleErrorToast = () => {

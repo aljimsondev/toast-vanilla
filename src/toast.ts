@@ -45,17 +45,17 @@ interface Toast {
 }
 
 type ToastStyle = {
-  offset: number;
-  borderRadius: number;
-  successColor: string;
-  errorColor: string;
-  warningColor: string;
-  infoColor: string;
-  gap: number;
-  textColor: string;
-  textColorForeground: string;
-  highlightColor: string;
-  background: string;
+  offset?: number;
+  borderRadius?: number;
+  successColor?: string;
+  errorColor?: string;
+  warningColor?: string;
+  infoColor?: string;
+  gap?: number;
+  textColor?: string;
+  textColorForeground?: string;
+  highlightColor?: string;
+  background?: string;
 };
 
 interface ToastConfig {
