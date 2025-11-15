@@ -559,7 +559,7 @@ export class ToastVanilla {
       });
     } else {
       // Standard toast: schedule auto-dismissal based on duration
-      this.handleComplete(toastId);
+      this.handleComplete(toastId, duration);
     }
   }
 

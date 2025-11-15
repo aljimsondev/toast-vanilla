@@ -248,7 +248,7 @@
       };
 
       window.showInfo = function showInfo(message) {
-        toast.info(message, { title: 'Info' });
+        toast.info(message, { title: 'Info', duration: 5000 });
       };
 
       window.showPromiseToast = function showCustom() {
@@ -270,6 +270,7 @@
               if (message) throw new Error('Error on failed!');
               return e?.message;
             },
+            duration: 1000,
           },
         );
       };
