@@ -262,10 +262,12 @@
           {
             loading: 'Loading promise...',
             success: (message) => {
+              if (message) throw new Error('Error on success!');
               console.log(message);
               return message;
             },
             error: (e) => {
+              if (message) throw new Error('Error on failed!');
               return e?.message;
             },
           },

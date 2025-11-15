@@ -591,19 +591,33 @@ export class ToastVanilla {
 
         const textResponse = success(data);
         this.updatePromiseToast(toastEl, {
-          message: textResponse,
+          message: textResponse || 'Success!',
           status: 'success',
         });
       })
       .catch((e) => {
-        // Only update if toast still exists in DOM
-        if (!toastEl.isConnected) return;
+        try {
+          // Only update if toast still exists in DOM
+          if (!toastEl.isConnected) return;
 
-        const errorMessage = error(e);
-        this.updatePromiseToast(toastEl, {
-          message: errorMessage,
-          status: 'error',
-        });
+          const errorMessage = error(e);
+          this.updatePromiseToast(toastEl, {
+            message: errorMessage,
+            status: 'error',
+          });
+        } catch (err) {
+          let message = 'Something went wrong!';
+          if (err instanceof Error) {
+            message = err?.message;
+          }
+          // Only update if toast still exists in DOM
+          if (!toastEl.isConnected) return;
+
+          this.updatePromiseToast(toastEl, {
+            message: message,
+            status: 'error',
+          });
+        }
       })
       .finally(() => {
         // Only proceed if toast still exists in DOM
