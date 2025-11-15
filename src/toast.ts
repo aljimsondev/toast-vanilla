@@ -10,33 +10,29 @@ interface PromiseOptions<T> {
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
 
-type ToastOptions<T = any> = {
+type BaseToastOptions = {
   title?: string;
   variant?: ToastVariant;
   duration?: number;
-} & (
-  | {
-      toastType: 'toast';
-      loading?: never;
-      error?: never;
-      success?: never;
-      callback?: never;
-    }
-  | {
-      toastType: 'promise';
-      loading: string;
-      error: (e: Error) => string;
-      success: (data: T) => string;
-      callback: () => T;
-    }
-  | {
-      toastType?: undefined;
-      loading?: string;
-      error?: (e: Error) => string;
-      success?: (data: T) => string;
-      callback?: () => T;
-    }
-);
+};
+
+type ToastOptions<T = any> = BaseToastOptions &
+  (
+    | {
+        toastType: 'toast';
+        loading?: never;
+        error?: never;
+        success?: never;
+        callback?: never;
+      }
+    | {
+        toastType: 'promise';
+        loading: string;
+        error: (e: Error) => string;
+        success: (data: T) => string;
+        callback: () => T;
+      }
+  );
 
 interface Toast {
   timestamp: Date;
@@ -196,17 +192,17 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  success(message: string, options: ToastOptions = {}) {
+  success(message: string, options: BaseToastOptions = {}) {
     const id = Date.now();
     this.setToast({
       timestamp: new Date(),
       type: 'success',
       message: message,
-      options: options,
+      options: options as ToastOptions,
       id: id,
     });
 
-    this.addToast(id, options);
+    this.addToast(id, options as ToastOptions);
   }
 
   /**
@@ -214,18 +210,18 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  warn(message: string, options: ToastOptions = {}) {
+  warn(message: string, options: BaseToastOptions = {}) {
     const id = Date.now();
 
     this.setToast({
       timestamp: new Date(),
       type: 'warning',
       message: message,
-      options: options,
+      options: options as ToastOptions,
       id: id,
     });
 
-    this.addToast(id, options);
+    this.addToast(id, options as ToastOptions);
   }
 
   /**
@@ -233,18 +229,18 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  error(message: string, options: ToastOptions = {}) {
+  error(message: string, options: BaseToastOptions = {}) {
     const id = Date.now();
 
     this.setToast({
       timestamp: new Date(),
       type: 'error',
       message: message,
-      options: options,
+      options: options as ToastOptions,
       id: id,
     });
 
-    this.addToast(id, options);
+    this.addToast(id, options as ToastOptions);
   }
 
   /**
@@ -252,18 +248,18 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  info(message: string, options: ToastOptions = {}) {
+  info(message: string, options: BaseToastOptions = {}) {
     const id = Date.now();
 
     this.setToast({
       timestamp: new Date(),
       type: 'info',
       message: message,
-      options: options,
+      options: options as ToastOptions,
       id: id,
     });
 
-    this.addToast(id, options);
+    this.addToast(id, options as ToastOptions);
   }
 
   /**
@@ -286,7 +282,7 @@ export class ToastVanilla {
       timestamp: new Date(),
       type: 'loader',
       message: '',
-      options: options,
+      options: options as ToastOptions,
       id: id,
       callback: callback,
     });
@@ -482,7 +478,10 @@ export class ToastVanilla {
    * @private
    * @throws Does not throw but silently returns if toast with given ID is not found
    */
-  private addToast(toastId: number, options: ToastOptions = {}) {
+  private addToast(
+    toastId: number,
+    options: ToastOptions = { toastType: 'toast' },
+  ) {
     const {
       title = 'Title',
       toastType = 'toast',
