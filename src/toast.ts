@@ -82,8 +82,6 @@ export class ToastVanilla {
   private toastContainer!: HTMLDivElement;
   private toastContentWrapper!: HTMLOListElement;
   private toasts: Toast[] = [];
-  private gap: number = 16;
-  private offset: number = 16;
   private position: ToastPosition = 'top-right';
   private lastNode: HTMLLIElement | null = null;
   private duration: number;
@@ -154,10 +152,10 @@ export class ToastVanilla {
 
     // todo add the necessary css variables
     this.toastContentWrapper.style = `
-      --offset-top:${this.offset}px;
-      --offset-right:${this.offset}px;
-      --offset-bottom:${this.offset}px;
-      --offset-left:${this.offset}px;
+      --offset-top:${this.styles.offset}px;
+      --offset-right:${this.styles.offset}px;
+      --offset-bottom:${this.styles.offset}px;
+      --offset-left:${this.styles.offset}px;
       --width: 356px;
       --border-radius:${this.styles.borderRadius}px;
       --success-color:${this.styles.successColor};
@@ -168,7 +166,7 @@ export class ToastVanilla {
       --text-color-foreground:${this.styles.textColorForeground};
       --highlight-color:${this.styles.highlightColor};
       --background:${this.styles.background};
-      --gap:${this.gap}px;
+      --gap:${this.styles.gap}px;
     `;
 
     this.toastContainer.appendChild(this.toastContentWrapper);
