@@ -36,7 +36,7 @@
   height: var(--initial-height);
 }
 
-[data-toast-item][data-toast-variant='success']
+[data-toast-item][data-toast-type='success']
   span
   svg:not([data-loader-icon] svg) {
   color: var(--success-color);
@@ -44,7 +44,7 @@
   stroke: var(--text-color-foreground);
 }
 
-[data-toast-item][data-toast-variant='error']
+[data-toast-item][data-toast-type='error']
   span
   svg:not([data-loader-icon] svg) {
   color: var(--error-color);
@@ -52,7 +52,7 @@
   stroke: var(--text-color-foreground);
 }
 
-[data-toast-item][data-toast-variant='warning']
+[data-toast-item][data-toast-type='warning']
   span
   svg:not([data-loader-icon] svg) {
   color: var(--warning-color);
@@ -60,9 +60,7 @@
   stroke: var(--text-color-foreground);
 }
 
-[data-toast-item][data-toast-variant='info']
-  span
-  svg:not([data-loader-icon] svg) {
+[data-toast-item][data-toast-type='info'] span svg:not([data-loader-icon] svg) {
   color: var(--info-color);
   fill: var(--info-color);
   stroke: var(--text-color-foreground);

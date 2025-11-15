@@ -308,12 +308,17 @@ export class ToastVanilla {
    * @param toast
    * @returns
    */
-  private createToastElement(toast: Toast) {
+  private createToastElement(
+    toast: Toast,
+    options: { variant?: ToastVariant },
+  ) {
+    const { variant = 'default' } = options;
     const { x, y } = this.getToastXYPosition();
     // Create new toast element (only happens once per toast)
     const toastEl = document.createElement('li');
     toastEl.setAttribute('data-toast-item', 'true');
-    toastEl.setAttribute('data-toast-variant', toast.type);
+    toastEl.setAttribute('data-toast-type', toast.type);
+    toastEl.setAttribute('data-toast-variant', variant);
     toastEl.setAttribute('data-position-y', y);
     toastEl.setAttribute('data-position-x', x);
     toastEl.setAttribute('data-toast-id', toast.id.toString());
@@ -492,7 +497,7 @@ export class ToastVanilla {
     if (!toast) return;
 
     // Create new toast element (only happens once per toast)
-    const toastEl = this.createToastElement(toast);
+    const toastEl = this.createToastElement(toast, { variant: variant });
 
     // Trigger mount animation by setting data attribute after initial render
     setTimeout(() => {
