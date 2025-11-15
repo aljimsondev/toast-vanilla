@@ -357,11 +357,12 @@ export class ToastVanilla {
    * @param {number} toastId - Unique identifier of the toast to complete
    * @private
    */
-  private handleComplete(toastId: number) {
+  private handleComplete(toastId: number, duration?: number) {
+    const toastDuration = duration || this.duration;
     // Handle promise with proper cleanup
     const timeoutId = setTimeout(() => {
       this.removeToast(toastId);
-    }, this.duration);
+    }, toastDuration);
 
     // Store timeout ID for cleanup if toast is manually dismissed
     const toastIndex = this.toasts.findIndex((t) => t.id === toastId);
@@ -554,6 +555,7 @@ export class ToastVanilla {
         success,
         toastEl,
         toastId,
+        duration,
       });
     } else {
       // Standard toast: schedule auto-dismissal based on duration
@@ -576,12 +578,14 @@ export class ToastVanilla {
     success,
     toastId,
     toastEl,
+    duration,
   }: {
     callback: () => Promise<T>;
     success: RequiredPromiseCallbacks<T>['success'];
     error: RequiredPromiseCallbacks<T>['error'];
     toastId: number;
     toastEl: HTMLLIElement;
+    duration?: number;
   }) {
     Promise.resolve()
       .then(() => callback())
@@ -622,7 +626,7 @@ export class ToastVanilla {
       .finally(() => {
         // Only proceed if toast still exists in DOM
         if (toastEl.isConnected) {
-          this.handleComplete(toastId);
+          this.handleComplete(toastId, duration);
         }
       });
   }
