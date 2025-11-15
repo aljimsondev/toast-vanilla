@@ -562,7 +562,13 @@ export class ToastVanilla {
   }
 
   /**
-   * Resolve the toast promose callback
+   * Resolve the toast promise callback
+   *
+   * Wraps the callback execution with Promise.resolve() to handle both:
+   * - Synchronous errors thrown before the promise is returned
+   * - Asynchronous rejections from the returned promise
+   *
+   * Updates the toast UI based on success or failure, then completes the toast lifecycle.
    */
   private resolveCallback<T>({
     callback,
@@ -577,8 +583,12 @@ export class ToastVanilla {
     toastId: number;
     toastEl: HTMLLIElement;
   }) {
-    callback()
+    Promise.resolve()
+      .then(() => callback())
       .then((data) => {
+        // Only update if toast still exists in DOM
+        if (!toastEl.isConnected) return;
+
         const textResponse = success(data);
         this.updatePromiseToast(toastEl, {
           message: textResponse,
@@ -586,6 +596,9 @@ export class ToastVanilla {
         });
       })
       .catch((e) => {
+        // Only update if toast still exists in DOM
+        if (!toastEl.isConnected) return;
+
         const errorMessage = error(e);
         this.updatePromiseToast(toastEl, {
           message: errorMessage,
@@ -593,7 +606,10 @@ export class ToastVanilla {
         });
       })
       .finally(() => {
-        this.handleComplete(toastId);
+        // Only proceed if toast still exists in DOM
+        if (toastEl.isConnected) {
+          this.handleComplete(toastId);
+        }
       });
   }
 
