@@ -1,18 +1,43 @@
 type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-
-interface ToastOptions {
-  position?: ToastPosition;
-  duration?: number;
-  title?: string;
-}
-
-interface ToastPromiseOptions<T> extends ToastOptions {
-  loading: string;
-  error: (e: Error) => string;
-  success: (data: T) => string;
-}
-
+type ToastVariant = 'outline' | 'filled' | 'default';
 type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
+
+interface PromiseOptions<T> {
+  loading?: string;
+  error?: (e: Error) => string;
+  success?: (data: T) => string;
+  callback?: () => T;
+}
+
+type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
+
+type ToastOptions<T = any> = {
+  title?: string;
+  variant?: ToastVariant;
+  duration?: number;
+} & (
+  | {
+      toastType: 'toast';
+      loading?: never;
+      error?: never;
+      success?: never;
+      callback?: never;
+    }
+  | {
+      toastType: 'promise';
+      loading: string;
+      error: (e: Error) => string;
+      success: (data: T) => string;
+      callback: () => T;
+    }
+  | {
+      toastType?: undefined;
+      loading?: string;
+      error?: (e: Error) => string;
+      success?: (data: T) => string;
+      callback?: () => T;
+    }
+);
 
 interface Toast {
   timestamp: Date;
@@ -63,7 +88,6 @@ export class ToastVanilla {
   private toastContentWrapper!: HTMLOListElement;
   private toasts: Toast[] = [];
   private gap: number = 16;
-  private initialHeight: number = 60;
   private offset: number = 16;
   private position: ToastPosition = 'top-right';
   private lastNode: HTMLLIElement | null = null;
@@ -104,7 +128,7 @@ export class ToastVanilla {
     }
 
     this.createToastContainer();
-    this.createToastContentWrapper({ position: position });
+    this.createToastContentWrapper();
   }
 
   /**
@@ -122,16 +146,17 @@ export class ToastVanilla {
 
   /**
    * Creates the ordered list wrapper for toast items with position and styling
-   * @param {ToastOptions} [options={}] - Options including position
    */
-  private createToastContentWrapper(options: ToastOptions = {}) {
-    const { position = 'top-left' } = options;
-    const [y, x] = position.split('-');
+  private createToastContentWrapper() {
+    const { x, y } = this.getToastXYPosition();
+
+    // create the ordered list element
     this.toastContentWrapper = document.createElement('ol');
     this.toastContentWrapper.setAttribute('tab-index', '-1');
     this.toastContentWrapper.setAttribute('data-toaster-content', 'true');
     this.toastContentWrapper.setAttribute('data-position-y', y);
     this.toastContentWrapper.setAttribute('data-position-x', x);
+
     // todo add the necessary css variables
     this.toastContentWrapper.style = `
       --offset-top:${this.offset}px;
@@ -155,12 +180,16 @@ export class ToastVanilla {
   }
 
   /**
-   * Clears the existing toast content wrapper and creates a new one
-   * Useful for resetting the toast display state
+   * Get the toast x,y position
+   * @returns
    */
-  private clearToastContentWrapper() {
-    this.toastContentWrapper.remove();
-    this.createToastContentWrapper();
+  private getToastXYPosition() {
+    const [y, x] = this.position.split('-');
+
+    return {
+      x,
+      y,
+    };
   }
 
   /**
@@ -186,7 +215,7 @@ export class ToastVanilla {
    * @param {string} message - The message content to display
    * @param {ToastOptions} [options={}] - Optional toast configuration
    */
-  warn(message: string, options: ToastOptions = {}) {
+  warn(message: string, options: ToastOptions) {
     const id = Date.now();
 
     this.setToast({
@@ -247,7 +276,10 @@ export class ToastVanilla {
    */
   async promise<T>(
     callback: () => Promise<T>,
-    options: ToastPromiseOptions<T>,
+    options: RequiredPromiseCallbacks<T> & {
+      duration?: ToastOptions['duration'];
+      variant?: ToastOptions['variant'];
+    },
   ) {
     const id = Date.now();
 
@@ -260,29 +292,24 @@ export class ToastVanilla {
       callback: callback,
     });
 
-    this.addToastPromise(id, callback, options);
+    this.addToast(id, {
+      toastType: 'promise',
+      callback,
+      loading: options.loading,
+      success: options.success,
+      error: options.error,
+      duration: options?.duration || this.duration,
+      variant: options?.variant || 'default',
+    });
   }
 
   /**
-   * Internal method to handle promise toast creation and state transitions
-   * Executes the callback and updates the toast based on promise resolution
-   * @template T - The type of data returned by the promise
-   * @param {number} toastId - Unique identifier for the toast
-   * @param {() => Promise<T>} callback - The async function to execute
-   * @param {ToastPromiseOptions<T>} options - Configuration for loading/success/error states
-   * @private
+   * Create a toast element with base data attributes atttached
+   * @param toast
+   * @returns
    */
-  private addToastPromise<T>(
-    toastId: number,
-    callback: () => Promise<T>,
-    options: ToastPromiseOptions<T>,
-  ) {
-    const { error, loading, success } = options;
-    const [y, x] = this.position.split('-');
-
-    const toast = this.toasts.find((t) => t.id === toastId);
-    if (!toast) return;
-
+  private createToastElement(toast: Toast) {
+    const { x, y } = this.getToastXYPosition();
     // Create new toast element (only happens once per toast)
     const toastEl = document.createElement('li');
     toastEl.setAttribute('data-toast-item', 'true');
@@ -293,73 +320,14 @@ export class ToastVanilla {
     toastEl.setAttribute('data-expanded', 'true');
     toastEl.setAttribute('data-mounted', 'false');
 
-    setTimeout(() => {
-      toastEl.setAttribute('data-mounted', 'true');
-    }, 100);
-
-    const toastContent = this.createToastContent({
-      type: 'promise',
-      message: '',
-      title: '',
-      id: toastId,
-    });
-
-    // get toast promise content wrapper
-    const toastContentMain = toastContent.querySelector(
-      '[data-promise-content]',
-    ) as Element;
-
-    // loader icon
-    const loaderIcon = this.setToastIcon('loader');
-    loaderIcon.setAttribute('data-loader-icon', '');
-
-    toastContentMain.appendChild(loaderIcon);
-    // create text
-    const text = document.createElement('p');
-    text.textContent = loading;
-
-    // append text
-    toastContentMain.appendChild(text);
-    // append toast content
-    toastEl.appendChild(toastContent);
-
-    if (this.lastNode) {
-      this.toastContentWrapper.insertBefore(toastEl, this.lastNode);
-    } else {
-      this.toastContentWrapper.appendChild(toastEl);
-    }
-
-    // set as last node
-    this.setLastNode(toastEl);
-
-    // apply update css properties
-    this.reorderToasts();
-
-    callback()
-      .then((data) => {
-        const textResponse = success(data);
-        this.updatePromiseToast(toastEl, {
-          message: textResponse,
-          status: 'success',
-        });
-      })
-      .catch((e) => {
-        const errorMessage = error(e);
-        this.updatePromiseToast(toastEl, {
-          message: errorMessage,
-          status: 'error',
-        });
-      })
-      .finally(() => {
-        this.handleComplete(toastId);
-      });
+    return toastEl;
   }
 
   /**
    * Set new toast
    * @param toast
    */
-  setToast(toast: Toast) {
+  private setToast(toast: Toast) {
     const old = this.toasts;
     // this will placed the new item to the first array
     this.toasts = [toast].concat(old);
@@ -369,7 +337,7 @@ export class ToastVanilla {
    * Set node as the last node added in the toast container
    * @param node
    */
-  setLastNode(node: HTMLLIElement) {
+  private setLastNode(node: HTMLLIElement) {
     this.lastNode = node;
   }
 
@@ -377,7 +345,7 @@ export class ToastVanilla {
    * Update the last node if it is the item that is currently queued for removal
    * @param node
    */
-  updateLastNode(node: HTMLLIElement) {
+  private updateLastNode(node: HTMLLIElement) {
     if (this.lastNode && this.lastNode === node) {
       this.lastNode = null;
     }
@@ -465,55 +433,168 @@ export class ToastVanilla {
 
   /**
    * Internal method to create and display a standard toast notification
-   * @param {number} toastId - Unique identifier for the toast
-   * @param {ToastOptions} [options={}] - Toast configuration
+   *
+   * This method handles the complete lifecycle of rendering a toast, including:
+   * - Creating the DOM element and applying animations
+   * - Building toast content with appropriate icons and messages
+   * - Distinguishing between standard toasts and promise-based toasts
+   * - Managing toast positioning and ordering
+   * - Triggering callbacks for promise-based toasts
+   *
+   * @param {number} toastId - Unique identifier for the toast instance
+   * @param {ToastOptions} [options={}] - Toast configuration object
+   * @param {string} [options.title='Title'] - The title displayed in the toast
+   * @param {'toast' | 'promise'} [options.toastType='toast'] - Type of toast to render
+   * @param {string} [options.loading] - Loading text displayed for promise toasts during execution
+   * @param {number} [options.duration] - Duration in milliseconds before toast auto-dismisses (only for standard toasts)
+   * @param {ToastVariant} [options.variant] - Visual variant of the toast ('outline' | 'filled' | 'default')
+   * @param {() => Promise<T>} [options.callback] - Async function to execute (required for promise toasts)
+   * @param {(data: T) => string} [options.success] - Callback to generate success message from promise result (required for promise toasts)
+   * @param {(error: Error) => string} [options.error] - Callback to generate error message if promise fails (required for promise toasts)
+   *
+   * @returns {void}
+   *
+   * @example
+   * // Standard toast
+   * this.addToast(1, {
+   *   title: 'Success',
+   *   toastType: 'toast',
+   *   duration: 3000,
+   *   variant: 'filled'
+   * });
+   *
+   * @example
+   * // Promise-based toast
+   * this.addToast(2, {
+   *   title: 'Uploading',
+   *   toastType: 'promise',
+   *   loading: 'Please wait...',
+   *   callback: () => uploadFile(),
+   *   success: (data) => `Uploaded: ${data.filename}`,
+   *   error: (err) => `Failed: ${err.message}`
+   * });
+   *
    * @private
+   * @throws Does not throw but silently returns if toast with given ID is not found
    */
   private addToast(toastId: number, options: ToastOptions = {}) {
-    const { title = 'Title' } = options;
-    const [y, x] = this.position.split('-');
+    const {
+      title = 'Title',
+      toastType = 'toast',
+      loading,
+      duration,
+      variant,
+    } = options;
 
-    const toast = this.toasts.find((t) => t.id === toastId);
+    const toast = this.getToast(toastId);
+
     if (!toast) return;
 
     // Create new toast element (only happens once per toast)
-    const toastEl = document.createElement('li');
-    toastEl.setAttribute('data-toast-item', 'true');
-    toastEl.setAttribute('data-toast-variant', toast.type);
-    toastEl.setAttribute('data-position-y', y);
-    toastEl.setAttribute('data-position-x', x);
-    toastEl.setAttribute('data-toast-id', toast.id.toString());
-    toastEl.setAttribute('data-expanded', 'true');
-    toastEl.setAttribute('data-mounted', 'false');
+    const toastEl = this.createToastElement(toast);
 
+    // Trigger mount animation by setting data attribute after initial render
     setTimeout(() => {
       toastEl.setAttribute('data-mounted', 'true');
     }, 100);
 
+    // Build toast content structure with title and message
     const toastContent = this.createToastContent({
       title: title,
       message: toast.message,
-      type: 'toast',
+      type: toastType,
       id: toastId,
     });
 
-    const icon = this.setToastIcon(toast.type);
-    toastEl.appendChild(icon);
-    toastEl.appendChild(toastContent);
-    // if theres an old node inserted, insert before the node to appear first
-    if (this.lastNode) {
-      this.toastContentWrapper.insertBefore(toastEl, this.lastNode);
+    if (toastType === 'toast') {
+      // Standard toast: append status icon (success, error, info, warning)
+      const icon = this.setToastIcon(toast.type);
+      toastEl.appendChild(icon);
     } else {
-      this.toastContentWrapper.appendChild(toastEl);
+      // Promise toast: append loader icon and loading text
+      // Get the promise content wrapper element
+      const toastContentMain = toastContent.querySelector(
+        '[data-promise-content]',
+      ) as Element;
+      if (!toastContentMain)
+        return console.warn('Toast main content not found!');
+
+      // Create and append animated loader icon
+      const loaderIcon = this.setToastIcon('loader');
+      loaderIcon.setAttribute('data-loader-icon', '');
+      toastContentMain.appendChild(loaderIcon);
+
+      // Create and append loading message text
+      const text = document.createElement('p');
+      text.textContent = loading || 'Loading...';
+      toastContentMain.appendChild(text);
     }
 
-    // mark as last node attached
+    // Append completed content structure to toast element
+    toastEl.appendChild(toastContent);
+
+    // Insert toast into DOM (maintains proper z-index and ordering)
+    this.insertToast(toastEl);
+
+    // Track this as the most recently added toast
     this.setLastNode(toastEl);
 
-    // reorder toasts
+    // Update visual ordering of all active toasts
     this.reorderToasts();
-    // handle the toast completion
-    this.handleComplete(toastId);
+
+    // Execute promise callback and update UI based on result
+    if (toastType === 'promise') {
+      const callback = options.callback!;
+      const error = options.error!;
+      const success = options.success!;
+
+      this.resolveCallback({
+        callback,
+        error,
+        success,
+        toastEl,
+        toastId,
+      });
+    } else {
+      // Standard toast: schedule auto-dismissal based on duration
+      this.handleComplete(toastId);
+    }
+  }
+
+  /**
+   * Resolve the toast promose callback
+   */
+  private resolveCallback<T>({
+    callback,
+    error,
+    success,
+    toastId,
+    toastEl,
+  }: {
+    callback: () => Promise<T>;
+    success: RequiredPromiseCallbacks<T>['success'];
+    error: RequiredPromiseCallbacks<T>['error'];
+    toastId: number;
+    toastEl: HTMLLIElement;
+  }) {
+    callback()
+      .then((data) => {
+        const textResponse = success(data);
+        this.updatePromiseToast(toastEl, {
+          message: textResponse,
+          status: 'success',
+        });
+      })
+      .catch((e) => {
+        const errorMessage = error(e);
+        this.updatePromiseToast(toastEl, {
+          message: errorMessage,
+          status: 'error',
+        });
+      })
+      .finally(() => {
+        this.handleComplete(toastId);
+      });
   }
 
   /**
@@ -538,6 +619,18 @@ export class ToastVanilla {
         return -(offsetY + height);
       default:
         return offsetY;
+    }
+  }
+
+  /**
+   * Insert toast element in the content wrapper
+   * @param toastEl
+   */
+  private insertToast(toastEl: HTMLLIElement) {
+    if (this.lastNode) {
+      this.toastContentWrapper.insertBefore(toastEl, this.lastNode);
+    } else {
+      this.toastContentWrapper.appendChild(toastEl);
     }
   }
 
@@ -655,17 +748,37 @@ export class ToastVanilla {
     }
 
     // update toasts array
-    this.toasts = this.toasts.filter((toast) => toast.id !== id);
+    this.updateToasts(id);
 
     const targetToast = this.toastContentWrapper?.querySelector(
       `[data-toast-id="${id}"]`,
     );
     if (targetToast && this.toastContentWrapper) {
       this.toastContentWrapper.removeChild(targetToast);
+
       // check of removed node is the lastNode in the memory
       this.updateLastNode(targetToast as HTMLLIElement);
+
       // reorder toast after the node removal
       this.reorderToasts();
     }
+  }
+  /**
+   * Update toasts and remove the toast referencing the params `id`
+   * @param toastId - toast id to be removed
+   */
+  private updateToasts(toastId: number) {
+    this.toasts = this.toasts.filter((toast) => toast.id !== toastId);
+  }
+
+  /**
+   * Get toast from toasts array
+   * @param toastId - the toast id to retrieve from the toasts
+   * @returns
+   */
+  private getToast(toastId: number) {
+    const toast = this.toasts.find((t) => t.id === toastId);
+
+    return toast;
   }
 }
