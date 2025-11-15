@@ -678,7 +678,7 @@ export class ToastVanilla {
     const toastElements = this.toastContentWrapper.querySelectorAll(
       '[data-toast-item="true"]',
     );
-    const [y, x] = this.position.split('-');
+    const { y } = this.getToastXYPosition();
 
     let startY = 0;
 
@@ -697,7 +697,7 @@ export class ToastVanilla {
       (el as HTMLElement).style.setProperty('--z-index', zIndex.toString());
       el.setAttribute('data-visible', visible.toString());
 
-      startY += height + this.gap;
+      startY += height + this.styles.gap!;
     });
   }
 
