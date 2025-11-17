@@ -6,17 +6,17 @@
   list-style: none;
 }
 [data-toaster-content][data-position-y='top'] {
-  top: var(--offset-top);
+  top: var(--toast-offset);
   --y: translateY(-100%);
 }
 [data-toaster-content][data-position-x='right'] {
-  right: var(--offset-right);
+  right: var(--toast-offset);
 }
 [data-toaster-content][data-position-x='left'] {
-  left: var(--offset-left);
+  left: var(--toast-offset);
 }
 [data-toaster-content][data-position-y='bottom'] {
-  bottom: var(--offset-bottom);
+  bottom: var(--toast-offset);
 }
 
 [data-toast-item][data-mounted='true'] {
@@ -41,7 +41,7 @@
   svg:not([data-loader-icon] svg) {
   color: var(--success-color);
   fill: var(--success-color);
-  stroke: var(--text-color-foreground);
+  stroke: var(--stroke-color);
 }
 
 [data-toast-item][data-toast-type='error']
@@ -49,7 +49,7 @@
   svg:not([data-loader-icon] svg) {
   color: var(--error-color);
   fill: var(--error-color);
-  stroke: var(--text-color-foreground);
+  stroke: var(--stroke-color);
 }
 
 [data-toast-item][data-toast-type='warning']
@@ -57,13 +57,12 @@
   svg:not([data-loader-icon] svg) {
   color: var(--warning-color);
   fill: var(--warning-color);
-  stroke: var(--text-color-foreground);
+  stroke: var(--stroke-color);
 }
 
 [data-toast-item][data-toast-type='info'] span svg:not([data-loader-icon] svg) {
-  color: var(--info-color);
   fill: var(--info-color);
-  stroke: var(--text-color-foreground);
+  stroke: var(--stroke-color);
 }
 
 [data-toast-item] {
@@ -78,16 +77,21 @@
   transform: var(--y);
   transition: transform 0.4s, opacity 0.4s, height 0.4s, box-shadow 0.2s;
   background: var(--background);
-  color: var(--text-color);
+  color: var(--text-color-secondary);
   font-size: 14px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+/* promise toast item */
+[data-toast-item][data-toast-type='loader'] {
+  background: var(--background-color);
+}
+
 [data-toast-item] [data-toast-title] {
   font-weight: 600;
-  color: var(--highlight-color);
+  color: var(--text-color-primary);
   font-size: 16px;
 }
 [data-loader-icon-wrapper],
@@ -112,6 +116,91 @@
 
 [data-icon-type='success'] svg {
   stroke: var(--success-color);
+}
+
+/* TOAST FILLED VARIANT */
+[data-toast-item][data-toast-variant='filled']:not([data-toast-type='loader']) {
+  color: var(--text-color-secondary-foreground);
+}
+
+[data-toast-item][data-toast-type='error'][data-toast-variant='filled'] {
+  background: var(--error-color);
+}
+
+[data-toast-item][data-toast-type='success'][data-toast-variant='filled'] {
+  background: var(--success-color);
+}
+
+[data-toast-item][data-toast-type='info'][data-toast-variant='filled'] {
+  background: var(--info-color);
+}
+
+[data-toast-item][data-toast-type='warning'][data-toast-variant='filled'] {
+  background: var(--warning-color);
+}
+
+/* title color */
+[data-toast-item][data-toast-variant='filled'] [data-toast-title] {
+  color: var(--text-color-primary-foreground);
+}
+
+/* icon color */
+[data-toast-item][data-toast-variant='filled']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  fill: transparent;
+  stroke: var(--stroke-color-foreground);
+}
+
+/* TOAST OUTLINE VARIANT */
+[data-toast-item][data-toast-variant='outline'] {
+  background: var(--background-color);
+}
+[data-toast-item][data-toast-type='error'][data-toast-variant='outline'] {
+  outline: 1px solid var(--error-color);
+}
+
+[data-toast-item][data-toast-type='success'][data-toast-variant='outline'] {
+  outline: 1px solid var(--success-color);
+}
+
+[data-toast-item][data-toast-type='info'][data-toast-variant='outline'] {
+  outline: 1px solid var(--info-color);
+}
+
+[data-toast-item][data-toast-type='warning'][data-toast-variant='outline'] {
+  outline: 1px solid var(--warning-color);
+}
+
+/* icon color */
+[data-toast-item][data-toast-variant='outline']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  fill: transparent;
+}
+
+[data-toast-item][data-toast-variant='outline'][data-toast-type='info']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  stroke: var(--info-color);
+}
+
+[data-toast-item][data-toast-variant='outline'][data-toast-type='warning']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  stroke: var(--warning-color);
+}
+
+[data-toast-item][data-toast-variant='outline'][data-toast-type='error']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  stroke: var(--error-color);
+}
+
+[data-toast-item][data-toast-variant='outline'][data-toast-type='success']
+  span
+  svg:not([data-toast-type='loader'] svg) {
+  stroke: var(--error-color);
 }
 
 @keyframes spin {

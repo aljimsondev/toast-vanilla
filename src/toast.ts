@@ -45,17 +45,57 @@ interface Toast {
 }
 
 type ToastStyle = {
+  /**
+   * document body offset from the toast container
+   */
   offset?: number;
+  /**
+   * Toast item border radius
+   */
   borderRadius?: number;
+  /**
+   * Spacing between toast item
+   */
+  gap?: number;
+  /**
+   * Toast item background
+   */
+  background?: string;
+
+  // variant colors
   successColor?: string;
   errorColor?: string;
   warningColor?: string;
   infoColor?: string;
-  gap?: number;
-  textColor?: string;
-  textColorForeground?: string;
-  highlightColor?: string;
-  background?: string;
+
+  /**
+   * Toast title color
+   */
+  primaryTextColor?: string;
+  /**
+   * Toast title color for filled variant
+   */
+  primaryTextColorForeground?: string;
+  /**
+   * Toast message color
+   */
+  secondaryTextColor?: string;
+  /**
+   * Toast message color for filled variant
+   */
+  secondaryTextColorForeground?: string;
+  /**
+   * svg icon stroke color
+   */
+  strokeColor?: string;
+  /**
+   * svg icon stroke color for filled variant
+   */
+  strokeColorForeground?: string;
+  /**
+   * svg icon fill color
+   */
+  fillColor?: string;
 };
 
 interface ToastConfig {
@@ -89,14 +129,17 @@ export class ToastVanilla {
     borderRadius: 8,
     errorColor: 'oklch(0.577 0.245 27.325)',
     gap: 16,
+    offset: 16,
     infoColor: 'oklch(0.546 0.245 262.881)',
     successColor: 'oklch(0.627 0.194 149.214)',
     warningColor: 'oklch(0.705 0.213 47.604)',
-    textColor: 'oklch(0.21 0.006 285.885)',
-    highlightColor: 'oklch(0.145 0 0)',
+    primaryTextColor: '0.141 0.005 285.823',
+    primaryTextColorForeground: 'oklch(1 0 0)',
+    secondaryTextColor: 'oklch(0.21 0.006 285.885)',
+    secondaryTextColorForeground: 'oklch(0.985 0 0)',
     background: 'oklch(1 0 0)',
-    textColorForeground: 'oklch(1 0 0)',
-    offset: 16,
+    fillColor: 'oklch(1 0 0)',
+    strokeColor: 'oklch(1 0 0)',
   };
 
   /**
@@ -125,10 +168,34 @@ export class ToastVanilla {
   }
 
   /**
+   * Get the toast container element in the DOM
+   * @returns
+   */
+  private getToastContainer() {
+    return document.querySelector('#toast-container');
+  }
+
+  /**
+   *  Get the toast content container element in the DOM
+   * @returns
+   */
+  getToastContentContainer() {
+    return this.toastContainer.querySelector('ol');
+  }
+
+  /**
    * Creates the main toast container element and appends it to the DOM
    * @private
    */
   private createToastContainer() {
+    // container already created
+    const container = this.getToastContainer();
+
+    if (container) {
+      this.toastContainer = container as HTMLDivElement;
+      return;
+    }
+
     this.toastContainer = document.createElement('div');
     this.toastContainer.id = 'toast-container';
     this.toastContainer.setAttribute('data-toaster-container', 'true');
@@ -141,6 +208,13 @@ export class ToastVanilla {
    * Creates the ordered list wrapper for toast items with position and styling
    */
   private createToastContentWrapper() {
+    // check if toast container already exists
+    const contentContainer = this.getToastContentContainer();
+    if (contentContainer) {
+      this.toastContentWrapper = contentContainer;
+      return;
+    }
+    // otherwise create
     const { x, y } = this.getToastXYPosition();
 
     // create the ordered list element
@@ -152,20 +226,21 @@ export class ToastVanilla {
 
     // todo add the necessary css variables
     this.toastContentWrapper.style = `
-      --offset-top:${this.styles.offset}px;
-      --offset-right:${this.styles.offset}px;
-      --offset-bottom:${this.styles.offset}px;
-      --offset-left:${this.styles.offset}px;
+      --toast-offset:${this.styles.offset}px;
       --width: 356px;
       --border-radius:${this.styles.borderRadius}px;
       --success-color:${this.styles.successColor};
       --error-color:${this.styles.errorColor};
       --warning-color:${this.styles.warningColor};
       --info-color:${this.styles.infoColor};
-      --text-color:${this.styles.textColor};
-      --text-color-foreground:${this.styles.textColorForeground};
-      --highlight-color:${this.styles.highlightColor};
-      --background:${this.styles.background};
+      --text-color-secondary:${this.styles.secondaryTextColor};
+      --text-color-secondary-foreground:${this.styles.secondaryTextColorForeground};
+      --text-color-primary:${this.styles.primaryTextColor};
+      --text-colore-primary-foreground:${this.styles.primaryTextColorForeground};
+      --stroke-color:${this.styles.strokeColor};
+      --stroke-color-foreground:${this.styles.strokeColorForeground};
+      --fill-color:${this.styles.fillColor};
+      --background-color:${this.styles.background};
       --gap:${this.styles.gap}px;
     `;
 
@@ -359,7 +434,7 @@ export class ToastVanilla {
     const toastDuration = duration || this.duration;
     // Handle promise with proper cleanup
     const timeoutId = setTimeout(() => {
-      this.removeToast(toastId);
+      // this.removeToast(toastId);
     }, toastDuration);
 
     // Store timeout ID for cleanup if toast is manually dismissed
