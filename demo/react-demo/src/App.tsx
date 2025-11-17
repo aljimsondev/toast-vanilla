@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ToastVanilla } from '../../../dist/index';
 import '../../../dist/index.css';
 
@@ -9,11 +10,13 @@ const toast = new ToastVanilla({
     primaryTextColor: 'var(--foreground)',
     secondaryTextColor: 'var(--secondary-foreground)',
     strokeColor: 'var(--accent-foreground)',
-    strokeColorForeground: 'var(--accent)',
+    strokeColorForeground: 'var(--accent-foreground)',
   },
 });
 
 function App() {
+  const [darkMode, setDarkMode] = useState(false);
+
   const handleErrorToast = () => {
     toast.error('An error occurred!', {
       variant: 'filled',
@@ -57,6 +60,18 @@ function App() {
     });
   }
 
+  const handleToogleMode = () => {
+    setDarkMode((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   return (
     <div className="toast-actions">
       <button onClick={handleSuccessToast}>Toast Success</button>
@@ -64,6 +79,7 @@ function App() {
       <button onClick={handleInfoToast}>Toast Info</button>
       <button onClick={handleWarningToast}>Toast Warning</button>
       <button onClick={handlePromiseToast}>Toast Promise</button>
+      <button onClick={handleToogleMode}>Toggle Dark Mode</button>
     </div>
   );
 }
