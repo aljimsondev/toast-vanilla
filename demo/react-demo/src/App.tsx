@@ -5,7 +5,7 @@ const toast = new ToastVanilla({
   position: 'top-left',
   maxItemToRender: 3,
   styles: {
-    background: 'var(--primary-foreground)',
+    background: 'var(--toast-background)',
     primaryTextColor: 'var(--foreground)',
     secondaryTextColor: 'var(--secondary-foreground)',
     strokeColor: 'var(--accent-foreground)',
