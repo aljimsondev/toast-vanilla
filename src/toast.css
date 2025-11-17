@@ -76,7 +76,7 @@
   border-radius: var(--border-radius);
   transform: var(--y);
   transition: transform 0.4s, opacity 0.4s, height 0.4s, box-shadow 0.2s;
-  background: var(--background);
+  background: var(--background-color);
   color: var(--text-color-secondary);
   font-size: 14px;
   display: flex;
