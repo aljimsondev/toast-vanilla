@@ -10,7 +10,7 @@ const toast = new ToastVanilla({
     primaryTextColor: 'var(--foreground)',
     secondaryTextColor: 'var(--secondary-foreground)',
     strokeColor: 'var(--accent-foreground)',
-    strokeColorForeground: 'var(--accent-foreground)',
+    strokeColorForeground: 'oklch(0.985 0 0)',
   },
 });
 
