@@ -209,3 +209,9 @@
     transform: rotate(360deg);
   }
 }
+
+@media screen and (max-width: 540px) {
+  [data-toaster-content] {
+    width: calc(100% - (var(--toast-offset) * 2));
+  }
+}
