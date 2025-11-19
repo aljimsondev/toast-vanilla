@@ -323,14 +323,6 @@ await toast.promise(
 );
 ```
 
-## Browser Support
-
-Works in all modern browsers that support ES2020 and CSS variables.
-
-## License
-
-MIT
-
 ## React Integration
 
 Use ToastVanilla seamlessly in React applications. Initialize it outside of components to maintain a singleton instance:
@@ -457,6 +449,10 @@ export default function App() {
   );
 }
 ```
+
+## Browser Support
+
+Works in all modern browsers that support ES2020 and CSS variables.
 
 ## Contributing
 
