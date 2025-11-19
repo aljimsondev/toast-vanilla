@@ -65,6 +65,10 @@ type ToastStyle = {
    * Toast item background
    */
   background?: string;
+  /**
+   * Toast item border color
+   */
+  border?: string;
 
   // variant colors
   successColor?: string;
@@ -144,6 +148,7 @@ export class ToastVanilla {
     background: 'oklch(1 0 0)',
     fillColor: 'oklch(1 0 0)',
     strokeColor: 'oklch(1 0 0)',
+    border: 'oklch(95.514% 0.00011 271.152)',
   };
 
   /**
@@ -246,6 +251,7 @@ export class ToastVanilla {
       --fill-color:${this.styles.fillColor};
       --background-color:${this.styles.background};
       --gap:${this.styles.gap}px;
+      --border-color:${this.styles.border}
     `;
 
     this.toastContainer.appendChild(this.toastContentWrapper);
