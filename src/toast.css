@@ -114,6 +114,9 @@
 }
 
 /* TOAST FILLED VARIANT */
+[data-toast-item][data-toast-variant='filled'] {
+  border: none;
+}
 [data-toast-item][data-toast-variant='filled']:not([data-toast-type='loader']) {
   color: var(--text-color-secondary-foreground);
 }
