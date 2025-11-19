@@ -11,6 +11,7 @@ const toast = new ToastVanilla({
     secondaryTextColor: 'var(--secondary-foreground)',
     strokeColor: 'var(--accent-foreground)',
     strokeColorForeground: 'oklch(0.985 0 0)',
+    border: 'var(--border)',
   },
 });
 
