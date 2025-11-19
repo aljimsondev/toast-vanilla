@@ -444,7 +444,7 @@ export class ToastVanilla {
     const toastDuration = duration || this.duration;
     // Handle promise with proper cleanup
     const timeoutId = setTimeout(() => {
-      // this.removeToast(toastId);
+      this.removeToast(toastId);
     }, toastDuration);
 
     // Store timeout ID for cleanup if toast is manually dismissed
