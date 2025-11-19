@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ToastVanilla, type ToastVariant } from '../../../dist/index';
-import '../../../dist/index.css';
+import { ToastVanilla, type ToastVariant } from 'toast-vanilla';
+import 'toast-vanilla/dist/index.css';
 
 const toast = new ToastVanilla({
   position: 'top-left',
