@@ -1,6 +1,10 @@
-type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-type ToastVariant = 'outline' | 'filled' | 'default';
-type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
+export type ToastPosition =
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right';
+export type ToastVariant = 'outline' | 'filled' | 'default';
+export type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
 
 interface PromiseOptions<T> {
   loading?: string;

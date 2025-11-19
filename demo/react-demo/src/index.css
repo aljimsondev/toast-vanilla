@@ -101,8 +101,15 @@ body {
   width: 100dvw;
   height: 100dvh;
   background: var(--background);
+  color: var(--foreground);
 }
 .toast-actions {
   display: flex;
   gap: 0.5rem;
+  margin-top: 1rem;
+}
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }

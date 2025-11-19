@@ -39,30 +39,23 @@
 [data-toast-item][data-toast-type='success']
   span
   svg:not([data-loader-icon] svg) {
-  color: var(--success-color);
-  fill: var(--success-color);
-  stroke: var(--stroke-color);
+  stroke: var(--success-color);
 }
 
 [data-toast-item][data-toast-type='error']
   span
   svg:not([data-loader-icon] svg) {
-  color: var(--error-color);
-  fill: var(--error-color);
-  stroke: var(--stroke-color);
+  stroke: var(--error-color);
 }
 
 [data-toast-item][data-toast-type='warning']
   span
   svg:not([data-loader-icon] svg) {
-  color: var(--warning-color);
-  fill: var(--warning-color);
-  stroke: var(--stroke-color);
+  stroke: var(--warning-color);
 }
 
 [data-toast-item][data-toast-type='info'] span svg:not([data-loader-icon] svg) {
-  fill: var(--info-color);
-  stroke: var(--stroke-color);
+  stroke: var(--info-color);
 }
 
 [data-toast-item] {
@@ -201,7 +194,7 @@
 [data-toast-item][data-toast-variant='outline'][data-toast-type='success']
   span
   svg:not([data-toast-type='loader'] svg) {
-  stroke: var(--error-color);
+  stroke: var(--success-color);
 }
 
 @keyframes spin {

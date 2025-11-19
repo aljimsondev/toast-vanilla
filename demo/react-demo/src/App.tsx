@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ToastVanilla } from '../../../dist/index';
+import { ToastVanilla, type ToastVariant } from '../../../dist/index';
 import '../../../dist/index.css';
 
 const toast = new ToastVanilla({
@@ -17,30 +17,30 @@ const toast = new ToastVanilla({
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  const handleErrorToast = () => {
+  const handleErrorToast = (variant: ToastVariant) => {
     toast.error('An error occurred!', {
-      variant: 'filled',
+      variant,
     });
   };
-  const handleInfoToast = () => {
+  const handleInfoToast = (variant: ToastVariant) => {
     toast.info('This is the toast info!', {
-      variant: 'outline',
+      variant,
     });
   };
 
-  const handleWarningToast = () => {
+  const handleWarningToast = (variant: ToastVariant) => {
     toast.warn('A basic warning toast', {
-      variant: 'outline',
+      variant,
     });
   };
 
-  const handleSuccessToast = () => {
+  const handleSuccessToast = (variant: ToastVariant) => {
     toast.success('Ohh, you have a success toast!', {
-      variant: 'filled',
+      variant,
     });
   };
-  const handlePromiseToast = () => {
-    toast.promise(myToastPromise, {
+  const handlePromiseToast = (variant: 'error' | 'success') => {
+    toast.promise(() => myToastPromise(variant), {
       loading: 'Processing...',
       error: (e) => {
         return e?.message;
@@ -52,9 +52,14 @@ function App() {
     });
   };
 
-  async function myToastPromise(): Promise<{ id: number; text: string }> {
-    return new Promise((resolve) => {
+  async function myToastPromise(
+    variant: 'error' | 'success',
+  ): Promise<{ id: number; text: string }> {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
+        if (variant === 'error') {
+          reject({ message: 'Toast promise rejection example!' });
+        }
         resolve({ id: 1, text: 'This is a promise resolved message!' });
       }, 4000);
     });
@@ -73,14 +78,65 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div className="toast-actions">
-      <button onClick={handleSuccessToast}>Toast Success</button>
-      <button onClick={handleErrorToast}>Toast Error</button>
-      <button onClick={handleInfoToast}>Toast Info</button>
-      <button onClick={handleWarningToast}>Toast Warning</button>
-      <button onClick={handlePromiseToast}>Toast Promise</button>
+    <section>
       <button onClick={handleToogleMode}>Toggle Dark Mode</button>
-    </div>
+      <div>
+        <h1>Default Variant</h1>
+        <div className="toast-actions">
+          <button onClick={() => handleSuccessToast('default')}>
+            Toast Success
+          </button>
+          <button onClick={() => handleErrorToast('default')}>
+            Toast Error
+          </button>
+          <button onClick={() => handleInfoToast('default')}>Toast Info</button>
+          <button onClick={() => handleWarningToast('default')}>
+            Toast Warning
+          </button>
+        </div>
+      </div>
+      <div>
+        <h1>Outline Variant</h1>
+        <div className="toast-actions">
+          <button onClick={() => handleSuccessToast('outline')}>
+            Toast Success
+          </button>
+          <button onClick={() => handleErrorToast('outline')}>
+            Toast Error
+          </button>
+          <button onClick={() => handleInfoToast('outline')}>Toast Info</button>
+          <button onClick={() => handleWarningToast('outline')}>
+            Toast Warning
+          </button>
+        </div>
+      </div>
+      <div>
+        <h1>Filled Variant</h1>
+        <div className="toast-actions">
+          <button onClick={() => handleSuccessToast('filled')}>
+            Toast Success
+          </button>
+          <button onClick={() => handleErrorToast('filled')}>
+            Toast Error
+          </button>
+          <button onClick={() => handleInfoToast('filled')}>Toast Info</button>
+          <button onClick={() => handleWarningToast('filled')}>
+            Toast Warning
+          </button>
+        </div>
+      </div>
+      <div>
+        <h1>Promise</h1>
+        <div className="toast-actions">
+          <button onClick={() => handlePromiseToast('success')}>
+            Toast Promise Success
+          </button>
+          <button onClick={() => handlePromiseToast('error')}>
+            Toast Promise Error
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
