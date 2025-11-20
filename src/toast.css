@@ -37,13 +37,7 @@
 }
 [data-toast-item][data-expanded='true'][data-dismiss] {
   opacity: 0;
-  --y: translate(100%, calc(var(--offset) * 1));
-}
-
-[data-toast-item][data-expanded='true'][data-dismiss]:not(
-    [data-position-x='right']
-  ) {
-  --y: translate(-100%, calc(var(--offset) * 1));
+  --y: translate(var(--translate-x), calc(var(--offset) * 1));
 }
 
 [data-toast-item][data-toast-type='success']

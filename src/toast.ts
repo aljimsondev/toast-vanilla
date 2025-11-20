@@ -18,6 +18,7 @@ type BaseToastOptions = {
   title?: string;
   variant?: ToastVariant;
   duration?: number;
+  position?: ToastPosition;
 };
 
 type ToastOptions<T = any> = BaseToastOptions &
@@ -573,6 +574,7 @@ export class ToastVanilla {
       loading,
       duration,
       variant,
+      position,
     } = options;
 
     const toast = this.getToast(toastId);
@@ -581,6 +583,11 @@ export class ToastVanilla {
 
     // Create new toast element (only happens once per toast)
     const toastEl = this.createToastElement(toast, { variant: variant });
+
+    if (position && position !== this.position) {
+      // update new toast position
+      this.setToastPosition(position);
+    }
 
     // Trigger mount animation by setting data attribute after initial render
     setTimeout(() => {
@@ -648,6 +655,23 @@ export class ToastVanilla {
     } else {
       // Standard toast: schedule auto-dismissal based on duration
       this.handleComplete(toastId, duration);
+    }
+  }
+
+  private setToastPosition(position: ToastPosition) {
+    this.position = position;
+    // update the toast container
+    const container = document.querySelector(
+      '[data-toaster-content]',
+    ) as HTMLElement;
+
+    if (container) {
+      const [y, x] = position.split('-');
+      const unmountOffset = x === 'left' ? '-100%' : '100%';
+      container.setAttribute('data-position-y', y);
+      container.setAttribute('data-position-x', x);
+      container.setAttribute('data-position-x', x);
+      container.style.setProperty('--translate-x', unmountOffset);
     }
   }
 
