@@ -655,6 +655,12 @@ export class ToastVanilla {
     }
   }
 
+  /**
+   * Sets the toast container position and updates related CSS variables
+   *
+   * Calculates the unmount animation offset based on horizontal alignment
+   * @param {ToastPosition} position - The position string in format "vertical-horizontal" (e.g., "top-right")
+   */
   private setToastPosition(position: ToastPosition) {
     this.position = position;
     // update the toast container
