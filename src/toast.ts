@@ -254,7 +254,8 @@ export class ToastVanilla {
       --fill-color:${this.styles.fillColor};
       --background-color:${this.styles.background};
       --gap:${this.styles.gap}px;
-      --border-color:${this.styles.border}
+      --border-color:${this.styles.border};
+      --translate-x:100%;
     `;
 
     this.toastContainer.appendChild(this.toastContentWrapper);
