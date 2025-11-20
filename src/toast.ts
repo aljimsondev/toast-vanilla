@@ -246,16 +246,20 @@ export class ToastVanilla {
       --warning-color:${this.styles.warningColor};
       --info-color:${this.styles.infoColor};
       --text-color-secondary:${this.styles.secondaryTextColor};
-      --text-color-secondary-foreground:${this.styles.secondaryTextColorForeground};
+      --text-color-secondary-foreground:${
+        this.styles.secondaryTextColorForeground
+      };
       --text-color-primary:${this.styles.primaryTextColor};
-      --text-colore-primary-foreground:${this.styles.primaryTextColorForeground};
+      --text-colore-primary-foreground:${
+        this.styles.primaryTextColorForeground
+      };
       --stroke-color:${this.styles.strokeColor};
       --stroke-color-foreground:${this.styles.strokeColorForeground};
       --fill-color:${this.styles.fillColor};
       --background-color:${this.styles.background};
       --gap:${this.styles.gap}px;
       --border-color:${this.styles.border};
-      --translate-x:100%;
+      --translate-x:${x === 'right' ? '100%' : '-100%'};
     `;
 
     this.toastContainer.appendChild(this.toastContentWrapper);
