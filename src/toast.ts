@@ -794,7 +794,7 @@ export class ToastVanilla {
     let startY = 0;
 
     toastElements.forEach((el, index) => {
-      const zIndex = index + 1;
+      const zIndex = toastElements.length - (index + 1);
       const visible = index + 1 <= this.maxItemToRender;
       const height = el.getBoundingClientRect().height;
 
