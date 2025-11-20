@@ -172,8 +172,10 @@ export class ToastVanilla {
       this.styles = { ...this.styles, ...styles };
     }
 
-    this.createToastContainer();
-    this.createToastContentWrapper();
+    if (typeof document !== 'undefined') {
+      this.createToastContainer();
+      this.createToastContentWrapper();
+    }
   }
 
   /**
