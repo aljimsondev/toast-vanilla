@@ -10,7 +10,7 @@ interface PromiseOptions<T> {
   loading?: string;
   error?: (e: Error) => string | Promise<string>;
   success?: (data: T) => string | Promise<string>;
-  onDismissCallback: () => void;
+  onDismissCallback?: () => void;
 }
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
