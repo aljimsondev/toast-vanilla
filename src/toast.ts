@@ -19,6 +19,7 @@ type BaseToastOptions = {
   variant?: ToastVariant;
   duration?: number;
   position?: ToastPosition;
+  dismissable?: boolean;
 };
 
 type ToastOptions<T = any> = BaseToastOptions &
@@ -118,7 +119,7 @@ interface ToastParams {
   message: string;
   title: string;
   type: 'promise' | 'toast';
-  id: string | number;
+  id: number;
 }
 
 /**
@@ -578,6 +579,7 @@ export class ToastVanilla {
       duration,
       variant,
       position,
+      dismissable = true,
     } = options;
 
     const toast = this.getToast(toastId);
@@ -631,6 +633,12 @@ export class ToastVanilla {
 
     // Append completed content structure to toast element
     toastEl.appendChild(toastContent);
+
+    // Append dismiss element when required
+    if (dismissable) {
+      const dismissEl = this.createDismissElement(toastId);
+      toastEl.appendChild(dismissEl);
+    }
 
     // Insert toast into DOM (maintains proper z-index and ordering)
     this.insertToast(toastEl);
@@ -854,6 +862,23 @@ export class ToastVanilla {
     }
 
     return content;
+  }
+
+  createDismissElement(toastId: number) {
+    // Create close button element
+    const dismissEl = document.createElement('button');
+    dismissEl.setAttribute('data-dismiss-btn', '');
+    dismissEl.type = 'button';
+    dismissEl.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+
+    // Add Event listener
+    dismissEl.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.removeToast(toastId);
+    });
+
+    return dismissEl;
   }
 
   /**

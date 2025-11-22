@@ -5,6 +5,41 @@
 [data-toaster-content] {
   list-style: none;
 }
+[data-dismiss-btn] {
+  /* Remove default browser styles */
+  -webkit-appearance: none; /* For iOS Safari */
+  -moz-appearance: none; /* For Firefox */
+  appearance: none; /* Standard property */
+
+  /* Reset other common default styles */
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit; /* Inherit font styles from parent */
+  color: inherit; /* Inherit color from parent */
+  cursor: pointer; /* Ensure pointer cursor on hover */
+  text-align: center;
+  text-decoration: none; /* Remove underline for anchor-like buttons */
+
+  /* dismiss styling */
+  height: var(--size);
+  width: var(--size);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+[data-dismiss-btn] svg {
+  --scale: 18px;
+  height: var(--scale);
+  width: var(--scale);
+}
+
 [data-toaster-content][data-position-y='top'] {
   top: var(--toast-offset);
   --y: translateY(-100%);
@@ -63,6 +98,7 @@
 }
 
 [data-toast-item] {
+  --size: 24px;
   overflow-wrap: anywhere;
   z-index: var(--z-index);
   position: absolute;
@@ -76,10 +112,18 @@
   color: var(--text-color-secondary);
   font-size: 14px;
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 0.5rem;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   border: 1px solid var(--border-color);
+}
+
+[data-toast-item] .toast-content {
+  flex: 1;
+  flex-grow: 1;
+  min-height: var(--size);
+  display: flex;
+  align-items: center;
 }
 
 /* promise toast item */
@@ -97,6 +141,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: var(--size);
+  width: var(--size);
+  position: relative;
+}
+
+[data-set-icon] svg {
+  height: 100%;
+  width: 100%;
 }
 
 [data-promise-content] {
