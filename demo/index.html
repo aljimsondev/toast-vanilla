@@ -28,7 +28,7 @@
         border-radius: 12px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         padding: 40px;
-        max-width: 600px;
+        max-width: 700px;
         width: 100%;
       }
 
@@ -58,7 +58,7 @@
 
       .button-group {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px;
       }
 
@@ -154,13 +154,19 @@
             class="btn-success"
             onclick="window.showSuccess('Success! Everything worked.')"
           >
-            Success
+            Default
           </button>
           <button
             class="btn-success"
-            onclick="window.showSuccess('Your changes have been saved.')"
+            onclick="window.showSuccess('Your changes have been saved.',{variant:'outline'})"
           >
-            Save
+            Outline
+          </button>
+          <button
+            class="btn-success"
+            onclick="window.showSuccess('Your changes have been saved.',{variant:'filled'})"
+          >
+            Filled
           </button>
         </div>
       </div>
@@ -172,13 +178,23 @@
             class="btn-error"
             onclick="window.showError('Something went wrong.')"
           >
-            Error
+            Default
           </button>
           <button
             class="btn-error"
-            onclick="window.showError('Failed to load data.')"
+            onclick="window.showError('Failed to load data.',{
+              variant:'outline'
+            })"
           >
-            Failed
+            Outline
+          </button>
+          <button
+            class="btn-error"
+            onclick="window.showError('Failed to load data.',{
+              variant:'filled'
+            })"
+          >
+            Filled
           </button>
         </div>
       </div>
@@ -190,13 +206,19 @@
             class="btn-warning"
             onclick="window.showWarning('Warning! Please review.')"
           >
-            Warning
+            Default
           </button>
           <button
             class="btn-warning"
-            onclick="window.showWarning('This action cannot be undone.')"
+            onclick="window.showWarning('This action cannot be undone.',{variant:'outline'})"
           >
-            Caution
+            Outline
+          </button>
+          <button
+            class="btn-warning"
+            onclick="window.showWarning('This action cannot be undone.',{variant:'filled'})"
+          >
+            Filled
           </button>
         </div>
       </div>
@@ -208,13 +230,19 @@
             class="btn-info"
             onclick="window.showInfo('Here is some information.')"
           >
-            Info
+            Default
           </button>
           <button
             class="btn-info"
-            onclick="window.showInfo(' Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo in corrupti similique maxime quod quam dolor maiores quaerat expedita non voluptatibus sit sapiente saepe praesentium animi, aliquam porro. In atque dicta amet, ullam quia distinctio recusandae cum quidem eos dolorum!')"
+            onclick="window.showInfo(' Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo in corrupti similique maxime quod quam dolor maiores quaerat expedita non voluptatibus sit sapiente saepe praesentium animi, aliquam porro. In atque dicta amet, ullam quia distinctio recusandae cum quidem eos dolorum!',{variant:'outline'})"
           >
-            Update
+            Outline
+          </button>
+          <button
+            class="btn-info"
+            onclick="window.showInfo(' Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo in corrupti similique maxime quod quam dolor maiores quaerat expedita non voluptatibus sit sapiente saepe praesentium animi, aliquam porro. In atque dicta amet, ullam quia distinctio recusandae cum quidem eos dolorum!',{variant:'filled'})"
+          >
+            Filled
           </button>
         </div>
       </div>
@@ -235,20 +263,20 @@
       const toast = new Toast({
         position: 'bottom-left',
       });
-      window.showSuccess = function showSuccess(message) {
-        toast.success(message);
+      window.showSuccess = function showSuccess(message, options) {
+        toast.success(message, options);
       };
 
-      window.showError = function showError(message) {
-        toast.error(message);
+      window.showError = function showError(message, options) {
+        toast.error(message, options);
       };
 
-      window.showWarning = function showWarning(message) {
-        toast.warn(message);
+      window.showWarning = function showWarning(message, options) {
+        toast.warn(message, options);
       };
 
-      window.showInfo = function showInfo(message) {
-        toast.info(message, { title: 'Info', duration: 5000 });
+      window.showInfo = function showInfo(message, options) {
+        toast.info(message, options);
       };
 
       window.showPromiseToast = function showCustom() {
