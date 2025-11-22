@@ -305,7 +305,7 @@
           </button>
           <button
             class="btn-secondary"
-            onclick="window.showPromiseToast('success')"
+            onclick="window.showPromiseToast('success',true)"
           >
             Success Promise
           </button>
@@ -350,7 +350,7 @@
         toast.info(message, options);
       };
 
-      window.showPromiseToast = function showCustom(type) {
+      window.showPromiseToast = function showCustom(type, dismissable = false) {
         toast.promise(
           () =>
             new Promise((resolve, reject) => {
@@ -369,7 +369,7 @@
             error: (e) => {
               return e?.message;
             },
-            dismissable: true,
+            dismissable: dismissable,
             onDismissCallback: () => {
               console.log('Dismiss callback called!');
             },
