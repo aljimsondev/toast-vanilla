@@ -369,6 +369,10 @@
             error: (e) => {
               return e?.message;
             },
+            dismissable: true,
+            onDismissCallback: () => {
+              console.log('Dismiss callback called!');
+            },
             duration: 1000,
           },
         );
