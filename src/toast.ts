@@ -10,6 +10,7 @@ interface PromiseOptions<T> {
   loading?: string;
   error?: (e: Error) => string | Promise<string>;
   success?: (data: T) => string | Promise<string>;
+  onDismissCallback: () => void;
 }
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
@@ -30,6 +31,7 @@ type ToastOptions<T = any> = BaseToastOptions &
         error?: never;
         success?: never;
         callback?: never;
+        onDismissCallback?: never;
       }
     | {
         toastType: 'promise';
@@ -37,6 +39,7 @@ type ToastOptions<T = any> = BaseToastOptions &
         error: (e: Error) => string | Promise<string>;
         success: (data: T) => string | Promise<string>;
         callback: () => T;
+        onDismissCallback?: () => void;
       }
   );
 
@@ -388,6 +391,7 @@ export class ToastVanilla {
       error: options.error,
       duration: options?.duration || this.duration,
       variant: options?.variant || 'default',
+      onDismissCallback: options.onDismissCallback,
     });
   }
 
@@ -580,6 +584,7 @@ export class ToastVanilla {
       variant,
       position,
       dismissable = true,
+      onDismissCallback,
     } = options;
 
     const toast = this.getToast(toastId);
@@ -636,7 +641,7 @@ export class ToastVanilla {
 
     // Append dismiss element when required
     if (dismissable) {
-      const dismissEl = this.createDismissElement(toastId);
+      const dismissEl = this.createDismissElement(toastId, onDismissCallback);
       toastEl.appendChild(dismissEl);
     }
 
@@ -864,7 +869,7 @@ export class ToastVanilla {
     return content;
   }
 
-  createDismissElement(toastId: number) {
+  createDismissElement(toastId: number, onDismissCallback = () => {}) {
     // Create close button element
     const dismissEl = document.createElement('button');
     dismissEl.setAttribute('data-dismiss-btn', '');
@@ -876,6 +881,7 @@ export class ToastVanilla {
     dismissEl.addEventListener('click', (e) => {
       e.preventDefault();
       this.removeToast(toastId);
+      onDismissCallback();
     });
 
     return dismissEl;
