@@ -15,13 +15,13 @@ A lightweight, vanilla JavaScript toast notification system with zero dependenci
 ## Installation
 
 ```bash
-npm install toast-vanilla
+npm install toastjs
 ```
 
 ## Quick Start
 
 ```javascript
-import { ToastVanilla } from 'toast-vanilla';
+import { ToastVanilla } from 'toastjs';
 
 // Initialize the toast system
 const toast = new ToastVanilla({
@@ -281,7 +281,49 @@ const toast = new ToastVanilla({
 });
 ```
 
-Colors use the OKLch color space for perceptually uniform results.
+## Dark Theme
+
+Toastjs does not support dark theme by default however to achieve dark theme you can use your application css variables that supports dark/light theme
+
+```css
+/* Light mode */
+:root {
+  --background: #e4e4e4;
+  --foreground: #161616;
+  --card: #eeeded;
+  --primary: #0e0e0e;
+  --primary-foreground: #fceded;
+  --secondary: #1a1a1a;
+  --border: #8f8f8f;
+}
+/* Dark mode */
+.dark {
+  --background: #161616;
+  --foreground: #e4e4e4;
+  --card: #292727;
+  --primary: #fceded;
+  --primary-foreground: #fceded;
+  --secondary: #c7c7c7;
+  --border: #363636;
+}
+```
+
+Add css variables into your toast instance styles configuration
+
+```javascript
+import { ToastVanilla as Toast } from 'toastjs';
+const toast = new Toast({
+  position: 'bottom-left',
+  styles: {
+    background: 'var(--card)',
+    primaryTextColor: 'var(--primary)',
+    primaryTextColorForeground: 'var(--primary-foreground)',
+    secondaryTextColor: 'var(--secondary)',
+    border: 'var(--border)',
+    // ... more style options
+  },
+});
+```
 
 ## Examples
 
@@ -347,8 +389,8 @@ await toast.promise(
 Use ToastVanilla seamlessly in React applications. Initialize it outside of components to maintain a singleton instance:
 
 ```jsx
-import { ToastVanilla } from 'toast-vanilla';
-import 'toast-vanilla/dist/index.css';
+import { ToastVanilla } from 'toastjs';
+import 'toastjs/dist/index.css';
 
 // Initialize outside component to persist across renders
 const toast = new ToastVanilla({
@@ -366,8 +408,8 @@ export default function MyComponent() {
 ToastVanilla integrates beautifully with shadcn/ui design systems. Map the toast styles to your design tokens:
 
 ```jsx
-import { ToastVanilla } from 'toast-vanilla';
-import 'toast-vanilla/dist/index.css';
+import { ToastVanilla } from 'toastjs';
+import 'toastjs/dist/index.css';
 
 const toast = new ToastVanilla({
   position: 'top-left',
@@ -399,8 +441,8 @@ export default function App() {
 
 ```jsx
 import { useEffect, useState } from 'react';
-import { ToastVanilla, type ToastVariant } from 'toast-vanilla';
-import 'toast-vanilla/dist/index.css';
+import { ToastVanilla, type ToastVariant } from 'toastjs';
+import 'toastjs/dist/index.css';
 
 const toast = new ToastVanilla({
   position: 'top-left',
