@@ -8,8 +8,8 @@ export type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loader';
 
 interface PromiseOptions<T> {
   loading?: string;
-  error?: (e: Error) => string;
-  success?: (data: T) => string;
+  error?: (e: Error) => string | Promise<string>;
+  success?: (data: T) => string | Promise<string>;
 }
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
@@ -34,8 +34,8 @@ type ToastOptions<T = any> = BaseToastOptions &
     | {
         toastType: 'promise';
         loading: string;
-        error: (e: Error) => string;
-        success: (data: T) => string;
+        error: (e: Error) => string | Promise<string>;
+        success: (data: T) => string | Promise<string>;
         callback: () => T;
       }
   );
@@ -717,22 +717,22 @@ export class ToastVanilla {
   }) {
     Promise.resolve()
       .then(() => callback())
-      .then((data) => {
+      .then(async (data) => {
         // Only update if toast still exists in DOM
         if (!toastEl.isConnected) return;
 
-        const textResponse = success(data);
+        const textResponse = await Promise.resolve(success(data));
         this.updatePromiseToast(toastEl, {
           message: textResponse || 'Success!',
           status: 'success',
         });
       })
-      .catch((e) => {
+      .catch(async (e) => {
         try {
           // Only update if toast still exists in DOM
           if (!toastEl.isConnected) return;
 
-          const errorMessage = error(e);
+          const errorMessage = await Promise.resolve(error(e));
           this.updatePromiseToast(toastEl, {
             message: errorMessage,
             status: 'error',
