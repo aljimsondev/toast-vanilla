@@ -149,6 +149,7 @@ export class ToastVanilla {
     background: 'oklch(1 0 0)',
     fillColor: 'oklch(1 0 0)',
     strokeColor: 'oklch(1 0 0)',
+    strokeColorForeground: 'oklch(1 0 0)',
     border: 'oklch(95.514% 0.00011 271.152)',
   };
 
