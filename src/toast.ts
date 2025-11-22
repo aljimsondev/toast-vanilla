@@ -10,7 +10,6 @@ interface PromiseOptions<T> {
   loading?: string;
   error?: (e: Error) => string | Promise<string>;
   success?: (data: T) => string | Promise<string>;
-  onDismissCallback?: () => void;
 }
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
@@ -371,6 +370,7 @@ export class ToastVanilla {
       duration?: ToastOptions['duration'];
       variant?: ToastOptions['variant'];
       dismissable?: ToastOptions['dismissable'];
+      onDismissCallback?: () => void;
     },
   ) {
     const id = Date.now();
