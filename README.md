@@ -5,12 +5,12 @@ A lightweight, vanilla JavaScript toast notification system with zero dependenci
 ## Features
 
 - **No Dependencies** - Pure vanilla JavaScript
-- **Multiple Toast Types** - Success, error, warning, info, and loader states
-- **Promise Support** - Automatic loading, success, and error state management
-- **Customizable** - Position, styling, duration, and variants
 - **Accessible** - Built with ARIA labels and semantic HTML
 - **Performant** - Lightweight and efficient DOM manipulation
-- **Smart Positioning** - Automatic stacking with configurable max visible items
+- **Highly Customizable** - Control every aspect including colors, spacing, positioning, duration, and variants
+- **Design System Integration** - Seamlessly integrate with shadcn/ui and other design systems using CSS variables
+- **Multiple Toast Types** - Success, error, warning, info, and loader states
+- **Promise Support** - Automatic loading, success, and error state management
 
 ## Installation
 
