@@ -1,7 +1,7 @@
 {
-  "name": "toast-vanilla",
+  "name": "toastjs",
   "version": "1.0.0",
-  "description": "A lightweight fully customizable vanilla javascript toast!",
+  "description": "A lightweight, vanilla JavaScript toast notification system with zero dependencies. Display elegant notifications with support for standard toasts and promise-based async operations.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,7 @@
   },
   "keywords": [
     "toast",
-    "toast-vanilla"
+    "toastjs"
   ],
   "files": [
     "dist"
