@@ -368,20 +368,12 @@ export class ToastVanilla {
     callback: () => Promise<T>,
     options: RequiredPromiseCallbacks<T> & {
       duration?: ToastOptions['duration'];
-      variant?: ToastOptions['variant'];
       dismissable?: ToastOptions['dismissable'];
       onDismissCallback?: () => void;
     },
   ) {
     const id = Date.now();
-    const {
-      dismissable = false,
-      variant,
-      duration,
-      loading,
-      success,
-      error,
-    } = options;
+    const { dismissable = false, duration, loading, success, error } = options;
 
     this.setToast({
       timestamp: new Date(),
@@ -399,7 +391,7 @@ export class ToastVanilla {
       success: success,
       error: error,
       duration: duration || this.duration,
-      variant: variant || 'default',
+      variant: 'default',
       dismissable: dismissable, // disable dismissable on promise toast by default
       onDismissCallback: options.onDismissCallback,
     });
