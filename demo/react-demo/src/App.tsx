@@ -49,7 +49,6 @@ function App() {
       success: (data) => {
         return data.text;
       },
-      variant: 'filled',
     });
   };
 
