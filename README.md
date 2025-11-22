@@ -1,4 +1,4 @@
-# ToastVanilla
+# ToastJs
 
 A lightweight, vanilla JavaScript toast notification system with zero dependencies. Display elegant notifications with support for standard toasts and promise-based async operations.
 
@@ -145,13 +145,15 @@ await toast.promise(
 
 ### Promise Options
 
-| Option     | Type                                 | Required | Description                                               | Use Case                                                            |
-| ---------- | ------------------------------------ | -------- | --------------------------------------------------------- | ------------------------------------------------------------------- |
-| `loading`  | `string`                             | ✓        | Message displayed while the promise is pending            | Show user the operation is in progress (e.g., "Uploading file...")  |
-| `success`  | `(data: T) => string`                | ✓        | Function that returns success message from promise result | Display result data (e.g., `(data) => 'Uploaded 5 files'`)          |
-| `error`    | `(error: Error) => string`           | ✓        | Function that returns error message from the error object | Show helpful error info (e.g., `(err) => 'Failed: ${err.message}'`) |
-| `duration` | `number`                             | ✗        | Time before toast dismisses after completion              | Override default duration for specific operations                   |
-| `variant`  | `'outline' \| 'filled' \| 'default'` | ✗        | Visual style of the toast                                 | Match the importance of the async operation                         |
+| Option              | Type                                 | Required | Description                                               | Use Case                                                                        |
+| ------------------- | ------------------------------------ | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `loading`           | `string`                             | ✓        | Message displayed while the promise is pending            | Show user the operation is in progress (e.g., "Uploading file...")              |
+| `success`           | `(data: T) => string`                | ✓        | Function that returns success message from promise result | Display result data (e.g., `(data) => 'Uploaded 5 files'`)                      |
+| `error`             | `(error: Error) => string`           | ✓        | Function that returns error message from the error object | Show helpful error info (e.g., `(err) => 'Failed: ${err.message}'`)             |
+| `duration`          | `number`                             | ✗        | Time before toast dismisses after completion              | Override default duration for specific operations                               |
+| `variant`           | `'outline' \| 'filled' \| 'default'` | ✗        | Visual style of the toast                                 | Match the importance of the async operation                                     |
+| `onDismissCallback` | `()=>void`                           | ✗        | A callback on dismissing toast                            | Promise cleanup callback e.g. fetching in the API with AbortController clean up |
+| `dismissable`       | `boolean`                            | ✗        | Allows user to dismiss the toast by clicking an X button  | Disable for important promise operation                                         |
 
 ### Configuration Options
 
@@ -299,11 +301,24 @@ toast.info('New features available', {
 ### Track an API Call
 
 ```javascript
-await toast.promise(() => fetch('/api/users').then((r) => r.json()), {
-  loading: 'Fetching users...',
-  success: (users) => `Loaded ${users.length} users`,
-  error: (err) => `Error: ${err.message}`,
-});
+const controller = new AbortController();
+
+await toast.promise(
+  () =>
+    fetch('/api/users', { signal: controller.signal }).then((r) => r.json()),
+  {
+    loading: 'Fetching users...',
+    success: (users) => `Loaded ${users.length} users`,
+    error: (err) =>
+      err.name === 'AbortError' ? 'Request cancelled' : `Error: ${err.message}`,
+    dismissable: true,
+    onDismissCallback: () => {
+      if (!controller.signal.aborted) {
+        controller.abort();
+      }
+    },
+  },
+);
 ```
 
 ### File Upload with Loading State
