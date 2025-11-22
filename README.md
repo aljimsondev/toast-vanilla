@@ -135,11 +135,13 @@ await toast.promise(
 
 ### Toast Options
 
-| Option     | Type                                 | Default     | Description                                          | Use Case                                                                         |
-| ---------- | ------------------------------------ | ----------- | ---------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `title`    | `string`                             | `'Title'`   | The heading text displayed in the toast              | Provide context about the notification type (e.g., "Success", "Error")           |
-| `duration` | `number`                             | `3000`      | Time in milliseconds before the toast auto-dismisses | Longer for important info, shorter for quick confirmations                       |
-| `variant`  | `'outline' \| 'filled' \| 'default'` | `'default'` | Visual style of the toast                            | `outline` for subtle notifications, `filled` for emphasis, `default` for balance |
+| Option        | Type                                                           | Default       | Description                                              | Use Case                                                                              |
+| ------------- | -------------------------------------------------------------- | ------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `title`       | `string`                                                       | `'Title'`     | The heading text displayed in the toast                  | Provide context about the notification type (e.g., "Success", "Error")                |
+| `duration`    | `number`                                                       | `3000`        | Time in milliseconds before the toast auto-dismisses     | Longer for important info, shorter for quick confirmations                            |
+| `variant`     | `'outline' \| 'filled' \| 'default'`                           | `'default'`   | Visual style of the toast                                | `outline` for subtle notifications, `filled` for emphasis, `default` for balance      |
+| `dismissable` | `boolean`                                                      | `'true'`      | Allows user to dismiss the toast by clicking an X button | Disable for critical toasts to ensure users read the message before it auto-dismisses |
+| `position`    | `'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'top-right'` | Where toasts appear on screen                            | Position based on UI layout and user attention flow                                   |
 
 ### Promise Options
 
