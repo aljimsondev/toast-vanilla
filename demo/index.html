@@ -12,10 +12,27 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --background: #e4e4e4;
+        --card: #eeeded;
+        --primary: #0e0e0e;
+        --primary-foreground: #fceded;
+        --secondary: #1a1a1a;
+        --border: #8f8f8f;
+      }
+      .dark {
+        --background: #161616;
+        --card: #292727;
+        --primary: #fceded;
+        --primary-foreground: #fceded;
+        --secondary: #c7c7c7;
+        --border: #363636;
+      }
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
           'Helvetica Neue', Arial, sans-serif;
-        background: #fff;
+        background: var(--background);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -24,7 +41,7 @@
       }
 
       .container {
-        background: white;
+        background: var(--card);
         border-radius: 12px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         padding: 40px;
@@ -255,6 +272,14 @@
           </button>
         </div>
       </div>
+      <div class="demo-section">
+        <h2>Toogle Theme</h2>
+        <div class="button-group full">
+          <button class="btn-info" onclick="window.toogleDarkMode()">
+            Dark/Light Mode
+          </button>
+        </div>
+      </div>
     </div>
 
     <script type="module">
@@ -262,6 +287,13 @@
       import { ToastVanilla as Toast } from '../dist/index.js';
       const toast = new Toast({
         position: 'bottom-left',
+        styles: {
+          background: 'var(--card)',
+          primaryTextColor: 'var(--primary)',
+          primaryTextColorForeground: 'var(--primary-foreground)',
+          secondaryTextColor: 'var(--secondary)',
+          border: 'var(--border)',
+        },
       });
       window.showSuccess = function showSuccess(message, options) {
         toast.success(message, options);
@@ -301,6 +333,19 @@
             duration: 1000,
           },
         );
+      };
+
+      window.toogleDarkMode = () => {
+        let theme = '';
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          theme = 'Light';
+        } else {
+          document.documentElement.classList.add('dark');
+          theme = 'Dark';
+        }
+
+        toast.success(`Theme is set to ${theme} mode!`);
       };
     </script>
   </body>
