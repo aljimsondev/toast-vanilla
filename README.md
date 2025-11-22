@@ -112,21 +112,23 @@ toast.info('Your session will expire soon', {
 
 ### Promise-Based Toasts
 
-Track async operations with automatic state management:
+Simple example of promise toast with AbortController
 
 ```javascript
+const controller = new AbortController();
+
 await toast.promise(
   async () => {
     // Your async operation
-    const response = await fetch('/api/data');
+    const response = await fetch('/api/data', { signal: controller.signal });
     return response.json();
   },
   {
     loading: 'Loading data...',
     success: (data) => `Loaded ${data.items} items`,
     error: (err) => `Failed: ${err.message}`,
-    duration: 3000,
-    variant: 'default',
+    dissmissable: true,
+    onDismissCallback: () => controller.abort(),
   },
 );
 ```
