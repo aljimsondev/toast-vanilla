@@ -14,6 +14,7 @@
 
       :root {
         --background: #e4e4e4;
+        --foreground: #161616;
         --card: #eeeded;
         --primary: #0e0e0e;
         --primary-foreground: #fceded;
@@ -22,6 +23,7 @@
       }
       .dark {
         --background: #161616;
+        --foreground: #e4e4e4;
         --card: #292727;
         --primary: #fceded;
         --primary-foreground: #fceded;
@@ -105,6 +107,15 @@
         background: #ef4444;
         color: var(--primary-foreground);
       }
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--background);
+      }
+
+      .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--foreground);
+      }
 
       .btn-error:hover {
         background: #dc2626;
@@ -136,6 +147,10 @@
 
       .button-group.full {
         grid-template-columns: 1fr;
+      }
+
+      .button-group.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
       }
 
       @media (max-width: 600px) {
@@ -262,19 +277,44 @@
           </button>
         </div>
       </div>
-
       <div class="demo-section">
-        <h2>Custom</h2>
-        <div class="button-group full">
-          <button class="btn-info" onclick="window.showPromiseToast()">
-            Promise
+        <h2>Dismiss</h2>
+        <div class="button-group cols-2">
+          <button
+            class="btn-secondary"
+            onclick="window.showInfo('This is a dismissable toast!')"
+          >
+            Toast with dismiss
+          </button>
+          <button
+            class="btn-secondary"
+            onclick="window.showInfo('This is not dismissable toast!', {dismissable:false})"
+          >
+            Undismissable toast
+          </button>
+        </div>
+      </div>
+      <div class="demo-section">
+        <h2>Promises</h2>
+        <div class="button-group cols-2">
+          <button
+            class="btn-secondary"
+            onclick="window.showPromiseToast('error')"
+          >
+            Error Promise
+          </button>
+          <button
+            class="btn-secondary"
+            onclick="window.showPromiseToast('success')"
+          >
+            Success Promise
           </button>
         </div>
       </div>
       <div class="demo-section">
         <h2>Toogle Theme</h2>
         <div class="button-group full">
-          <button class="btn-info" onclick="window.toogleDarkMode()">
+          <button class="btn-secondary" onclick="window.toogleDarkMode()">
             Dark/Light Mode
           </button>
         </div>
@@ -310,7 +350,7 @@
         toast.info(message, options);
       };
 
-      window.showPromiseToast = function showCustom() {
+      window.showPromiseToast = function showCustom(type) {
         toast.promise(
           () =>
             new Promise((resolve, reject) => {
@@ -321,12 +361,12 @@
           {
             loading: 'Loading promise...',
             success: (message) => {
-              if (message) throw new Error('Error on success!');
-              console.log(message);
+              if (type === 'error')
+                throw new Error('Error while resolving the promise!');
+
               return message;
             },
             error: (e) => {
-              if (message) throw new Error('Error on failed!');
               return e?.message;
             },
             duration: 1000,
