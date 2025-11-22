@@ -572,7 +572,7 @@ export class ToastVanilla {
     options: ToastOptions = { toastType: 'toast' },
   ) {
     const {
-      title = 'Title',
+      title = '',
       toastType = 'toast',
       loading,
       duration,
@@ -827,19 +827,25 @@ export class ToastVanilla {
    * @returns {HTMLDivElement} The created content wrapper element
    * @private
    */
-  private createToastContent({ title, message, type = 'toast' }: ToastParams) {
+  private createToastContent({
+    title = '',
+    message,
+    type = 'toast',
+  }: ToastParams) {
     const content = document.createElement('div');
     content.className = 'toast-content';
 
     if (type === 'toast') {
-      const titleEl = document.createElement('div');
+      // check if title is provided
+      if (title) {
+        const titleEl = document.createElement('div');
+        titleEl.setAttribute('data-toast-title', '');
+        titleEl.textContent = title;
+        content.appendChild(titleEl);
+      }
+
       const descriptionEl = document.createElement('div');
-
-      titleEl.setAttribute('data-toast-title', '');
-      titleEl.textContent = title;
       descriptionEl.textContent = message;
-
-      content.appendChild(titleEl);
       content.appendChild(descriptionEl);
     } else {
       const promiseEl = document.createElement('div');
