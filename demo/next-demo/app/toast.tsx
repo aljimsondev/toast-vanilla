@@ -12,15 +12,20 @@ export const toast = new ToastVanilla({
 
 function ToastDemo() {
   const showToast = () => {
-    toast.error('Toast in nextjs', {
+    toast.success('Toast in nextjs', {
       variant: 'filled',
       duration: 10000,
     });
   };
 
   return (
-    <div>
-      <button onClick={showToast}>Toast</button>
+    <div className="container mx-auto h-dvh w-full flex items-center justify-center">
+      <button
+        className="px-8 py-4 rounded-lg bg-gray-900 border-gray-700 border hover:bg-gray-950 duration-300 cursor-pointer"
+        onClick={showToast}
+      >
+        Toast
+      </button>
     </div>
   );
 }
