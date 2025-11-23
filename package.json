@@ -5,6 +5,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "url": "https://github.com/aljimsondev/toastjs"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "dev": "concurrently \"esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --watch\" \"tsc --emitDeclarationOnly --watch\"",
