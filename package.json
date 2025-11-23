@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "dev": "concurrently \"esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --watch\" \"tsc --emitDeclarationOnly --watch\"",
-    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=esm --minify --outfile=dist/index.min.js && tsc --emitDeclarationOnly",
+    "build": "node esbuild.config.js && tsc --emitDeclarationOnly",
     "demo:react": "cd demo/react-demo && npm run dev",
     "demo:next": "cd demo/next-demo && npm run dev"
   },
@@ -30,6 +30,7 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "esbuild": "^0.25.12",
+    "esbuild-plugin-copy": "^2.1.1",
     "typescript": "^5.9.3"
   }
 }
