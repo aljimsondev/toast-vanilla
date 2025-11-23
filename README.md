@@ -144,6 +144,7 @@ await toast.promise(
 | `variant`     | `'outline' \| 'filled' \| 'default'`                           | `'default'`   | Visual style of the toast                                | `outline` for subtle notifications, `filled` for emphasis, `default` for balance      |
 | `dismissable` | `boolean`                                                      | `'true'`      | Allows user to dismiss the toast by clicking an X button | Disable for critical toasts to ensure users read the message before it auto-dismisses |
 | `position`    | `'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right'` | `'top-right'` | Where toasts appear on screen                            | Position based on UI layout and user attention flow                                   |
+| `showIcon`    | `boolean`                                                      | `true`        | Include icon to the toast elemennt                       | Hide icon to highlight notification message                                           |
 
 ### Promise Options
 
