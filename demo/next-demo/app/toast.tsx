@@ -1,6 +1,6 @@
 'use client';
-import { BaseToastOptions, ToastVanilla } from 'toastjs';
-import 'toastjs/dist/index.css';
+import { BaseToastOptions, ToastVanilla } from 'toast-vanilla';
+import 'toast-vanilla/dist/index.css';
 
 export const toast = new ToastVanilla({
   maxItemToRender: 3,
