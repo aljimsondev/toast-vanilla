@@ -12,7 +12,7 @@ A lightweight, vanilla JavaScript toast notification system with zero dependenci
 - **Multiple Toast Types** - Success, error, warning, info, and loader states
 - **Promise Support** - Automatic loading, success, and error state management
 
-## Installation
+## Installation using NPM
 
 ```bash
 npm install toast-vanilla
@@ -36,6 +36,69 @@ toast.error('Something went wrong');
 toast.warn('Please review this');
 toast.info('Here's some information');
 ```
+
+## Quick Start using CDN
+
+1. Include the Stylesheet
+   Add the CSS file to your HTML <head> tag
+
+```html
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.css"
+/>
+```
+
+2. Initialize Toast Vanilla
+   Add a module script to initialize the toast instance and make it globally available:
+
+```html
+<script type="module">
+  import { ToastVanilla } from 'https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.js';
+
+  window.toast = new ToastVanilla({
+    position: 'bottom-left',
+    maxItemToRender: 3,
+    duration: 3000,
+    styles: {
+      background: 'var(--card)',
+      primaryTextColor: 'var(--primary)',
+      primaryTextColorForeground: 'var(--primary-foreground)',
+      secondaryTextColor: 'var(--secondary)',
+      secondaryTextColorForeground: 'var(--secondary-foreground)',
+      border: 'var(--border)',
+    },
+  });
+</script>
+```
+
+3. Use it Anywhere
+   Once initialized, you can call toast methods from any script on your page:
+
+```html
+<script>
+  // Success notification
+  window.toast.success('Operation successful!');
+
+  // Error notification
+  window.toast.error('Something went wrong!');
+
+  // Warning notification
+  window.toast.warn('Please be careful!');
+
+  // Info notification
+  window.toast.info('Here is some information');
+
+  // Promise-based toast
+  window.toast.promise(() => fetch('/api/data').then((res) => res.json()), {
+    loading: 'Loading data...',
+    success: (data) => `Data loaded: ${data.count} items`,
+    error: (err) => `Failed to load: ${err.message}`,
+  });
+</script>
+```
+
+#### NOTE: Make sure the module script runs before you try to use window.toast in other scripts
 
 ## Configuration
 
