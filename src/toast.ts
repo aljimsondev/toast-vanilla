@@ -20,6 +20,7 @@ type BaseToastOptions = {
   duration?: number;
   position?: ToastPosition;
   dismissable?: boolean;
+  showIcon?: boolean;
 };
 
 type ToastOptions<T = any> = BaseToastOptions &
@@ -586,6 +587,7 @@ export class ToastVanilla {
       variant,
       position,
       dismissable = true,
+      showIcon = false,
       onDismissCallback,
     } = options;
 
@@ -615,9 +617,12 @@ export class ToastVanilla {
     });
 
     if (toastType === 'toast') {
-      // Standard toast: append status icon (success, error, info, warning)
-      const icon = this.setToastIcon(toast.type);
-      toastEl.appendChild(icon);
+      // Check if hideIcon is not set to false
+      if (!showIcon) {
+        // Standard toast: append status icon (success, error, info, warning)
+        const icon = this.setToastIcon(toast.type);
+        toastEl.appendChild(icon);
+      }
     } else {
       // Promise toast: append loader icon and loading text
       // Get the promise content wrapper element
