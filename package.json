@@ -5,11 +5,10 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "browser": "./dist/index.umd.js",
   "scripts": {
     "clean": "rm -rf dist",
     "dev": "concurrently \"esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --watch\" \"tsc --emitDeclarationOnly --watch\"",
-    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=esm --minify --outfile=dist/index.min.js && esbuild src/index.ts --bundle --format=iife --global-name=ToastVanilla --outfile=dist/index.umd.js && esbuild src/index.ts --bundle --format=iife --global-name=ToastVanilla --minify --outfile=dist/index.umd.min.js && tsc --emitDeclarationOnly",
+    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js && esbuild src/index.ts --bundle --format=esm --minify --outfile=dist/index.min.js && tsc --emitDeclarationOnly",
     "demo:react": "cd demo/react-demo && npm run dev",
     "demo:next": "cd demo/next-demo && npm run dev"
   },

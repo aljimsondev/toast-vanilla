@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Toast Package Demo</title>
-    <link rel="stylesheet" href="../dist/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.css"
+    />
     <style>
       * {
         margin: 0;
@@ -320,11 +323,10 @@
         </div>
       </div>
     </div>
-
     <script type="module">
+      import { ToastVanilla } from 'https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.js';
       // Placeholder functions - replace with your actual toast package
-      import { ToastVanilla as Toast } from '../dist/index.js';
-      const toast = new Toast({
+      const toast = new ToastVanilla({
         position: 'bottom-left',
         styles: {
           background: 'var(--card)',
@@ -334,6 +336,7 @@
           border: 'var(--border)',
         },
       });
+
       window.showSuccess = function showSuccess(message, options) {
         toast.success(message, options);
       };
