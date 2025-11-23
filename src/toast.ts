@@ -14,7 +14,7 @@ interface PromiseOptions<T> {
 
 type RequiredPromiseCallbacks<T> = Required<PromiseOptions<T>>;
 
-type BaseToastOptions = {
+export type BaseToastOptions = {
   title?: string;
   variant?: ToastVariant;
   duration?: number;
