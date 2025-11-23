@@ -45,7 +45,7 @@ toast.info('Here's some information');
 ```html
 <link
   rel="stylesheet"
-  href="https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.css"
+  href="https://unpkg.com/toast-vanilla@1.0.6/dist/index.css"
 />
 ```
 
@@ -54,7 +54,7 @@ toast.info('Here's some information');
 
 ```html
 <script type="module">
-  import { ToastVanilla } from 'https://unpkg.com/toast-vanilla@1.0.1/dist/index.min.js';
+  import { ToastVanilla } from 'https://unpkg.com/toast-vanilla@1.0.6/dist/index.min.js';
 
   window.toast = new ToastVanilla({
     position: 'bottom-left',
