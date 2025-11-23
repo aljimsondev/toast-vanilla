@@ -3,8 +3,9 @@ import { ToastVanilla, type ToastVariant } from 'toastjs';
 import 'toastjs/dist/index.css';
 
 const toast = new ToastVanilla({
-  position: 'top-left',
+  position: 'top-right',
   maxItemToRender: 3,
+  duration: 4000,
   styles: {
     background: 'var(--toast-background)',
     primaryTextColor: 'var(--foreground)',

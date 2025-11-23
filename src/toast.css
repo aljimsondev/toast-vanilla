@@ -99,10 +99,12 @@
 
 [data-toast-item] {
   --size: 24px;
+  box-sizing: border-box;
   overflow-wrap: anywhere;
   z-index: var(--z-index);
   position: absolute;
   width: 100%;
+  max-width: 100%;
   opacity: 0;
   padding: 1rem;
   border-radius: var(--border-radius);
