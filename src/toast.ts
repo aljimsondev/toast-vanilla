@@ -196,7 +196,7 @@ export class ToastVanilla {
    *  Get the toast content container element in the DOM
    * @returns
    */
-  getToastContentContainer() {
+  private getToastContentContainer() {
     return this.toastContainer.querySelector('ol');
   }
 
@@ -875,8 +875,13 @@ export class ToastVanilla {
 
     return content;
   }
-
-  createDismissElement(toastId: number, onDismissCallback = () => {}) {
+  /**
+   * Create a dismiss button with its corresponding event listener
+   * @param toastId - id of the toast
+   * @param onDismissCallback - the callback that run on dismiss toast
+   * @returns
+   */
+  private createDismissElement(toastId: number, onDismissCallback = () => {}) {
     // Create close button element
     const dismissEl = document.createElement('button');
     dismissEl.setAttribute('data-dismiss-btn', '');
