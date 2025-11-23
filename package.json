@@ -1,5 +1,5 @@
 {
-  "name": "toastjs",
+  "name": "toast-vanilla",
   "version": "1.0.0",
   "description": "A lightweight, vanilla JavaScript toast notification system with zero dependencies. Display elegant notifications with support for standard toasts and promise-based async operations.",
   "type": "module",
@@ -14,7 +14,10 @@
   },
   "keywords": [
     "toast",
-    "toastjs"
+    "toast-vanilla",
+    "javascript",
+    "notifications",
+    "snackbar"
   ],
   "files": [
     "dist"
