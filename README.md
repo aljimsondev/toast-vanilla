@@ -1,4 +1,4 @@
-# ToastJs
+# Toast Vanilla
 
 A lightweight, vanilla JavaScript toast notification system with zero dependencies. Display elegant notifications with support for standard toasts and promise-based async operations.
 
@@ -15,13 +15,13 @@ A lightweight, vanilla JavaScript toast notification system with zero dependenci
 ## Installation
 
 ```bash
-npm install toastjs
+npm install toast-vanilla
 ```
 
 ## Quick Start
 
 ```javascript
-import { ToastVanilla } from 'toastjs';
+import { ToastVanilla } from 'toast-vanilla';
 
 // Initialize the toast system
 const toast = new ToastVanilla({
@@ -283,7 +283,7 @@ const toast = new ToastVanilla({
 
 ## Dark Theme
 
-Toastjs does not support dark theme by default however to achieve dark theme you can use your application css variables that supports dark/light theme
+toast-vanilla does not support dark theme by default however to achieve dark theme you can use your application css variables that supports dark/light theme
 
 ```css
 /* Light mode */
@@ -311,7 +311,7 @@ Toastjs does not support dark theme by default however to achieve dark theme you
 Add css variables into your toast instance styles configuration
 
 ```javascript
-import { ToastVanilla as Toast } from 'toastjs';
+import { ToastVanilla as Toast } from 'toast-vanilla';
 const toast = new Toast({
   position: 'bottom-left',
   styles: {
@@ -389,8 +389,8 @@ await toast.promise(
 Use ToastVanilla seamlessly in React applications. Initialize it outside of components to maintain a singleton instance:
 
 ```jsx
-import { ToastVanilla } from 'toastjs';
-import 'toastjs/dist/index.css';
+import { ToastVanilla } from 'toast-vanilla';
+import 'toast-vanilla/dist/index.css';
 
 // Initialize outside component to persist across renders
 const toast = new ToastVanilla({
@@ -408,8 +408,8 @@ export default function MyComponent() {
 ToastVanilla integrates beautifully with shadcn/ui design systems. Map the toast styles to your design tokens:
 
 ```jsx
-import { ToastVanilla } from 'toastjs';
-import 'toastjs/dist/index.css';
+import { ToastVanilla } from 'toast-vanilla';
+import 'toast-vanilla/dist/index.css';
 
 const toast = new ToastVanilla({
   position: 'top-left',
@@ -441,8 +441,8 @@ export default function App() {
 
 ```jsx
 import { useEffect, useState } from 'react';
-import { ToastVanilla, type ToastVariant } from 'toastjs';
-import 'toastjs/dist/index.css';
+import { ToastVanilla, type ToastVariant } from 'toast-vanilla';
+import 'toast-vanilla/dist/index.css';
 
 const toast = new ToastVanilla({
   position: 'top-left',
