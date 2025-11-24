@@ -78,6 +78,7 @@ toast.info('Here's some information');
 ```
 
 3. Use it Anywhere
+
    Once initialized, you can call toast methods from any script on your page:
 
 ```html
