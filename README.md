@@ -43,6 +43,7 @@ toast.info('Here's some information');
 ## Quick Start using CDN
 
 1. Include the Stylesheet
+
    Add the CSS file to your HTML <head> tag
 
 ```html
@@ -53,6 +54,7 @@ toast.info('Here's some information');
 ```
 
 2. Initialize Toast Vanilla
+
    Add a module script to initialize the toast instance and make it globally available:
 
 ```html
