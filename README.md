@@ -23,6 +23,9 @@ npm install toast-vanilla
 ```javascript
 import { ToastVanilla } from 'toast-vanilla';
 
+// Import toast css
+import 'toast-vanilla/dist/index.css';
+
 // Initialize the toast system
 const toast = new ToastVanilla({
   maxItemToRender: 3,
@@ -98,7 +101,7 @@ toast.info('Here's some information');
 </script>
 ```
 
-#### NOTE: Make sure the module script runs before you try to use window.toast in other scripts
+> NOTE: Make sure the module script runs before you try to use window.toast in other scripts
 
 ## Configuration
 
